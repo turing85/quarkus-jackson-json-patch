@@ -121,7 +121,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                     schema = @Schema(ref = OpenApiDefinition.SCHEMA_ERROR),
                     example = """
                         {
-                          "message": "User not found"
+                          "message": "Entity not found"
                         }""")),
             @APIResponse(
                 name = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR,

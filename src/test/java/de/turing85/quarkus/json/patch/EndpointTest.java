@@ -100,7 +100,8 @@ class EndpointTest {
 
   @Test
   void whenPatchUnknownField_thenGetBadRequest() {
- // @formatter:off
+    // given
+    // @formatter:off
     RestAssured
         .given()
             .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
@@ -117,11 +118,26 @@ class EndpointTest {
                     "value": "boom"
                   }
                 ]""")
+
+    // when
         .when().patch("claire")
+
+    // then
         .then()
             .statusCode(is(Response.Status.BAD_REQUEST.getStatusCode()))
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()));
+    RestAssured
+        .when().get("claire")
+        .then()
+            .statusCode(is(Response.Status.OK.getStatusCode()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
+            .header(
+                HttpHeaders.LOCATION,
+                UriBuilder.fromUri(uri).path("claire").build().toASCIIString())
+            .body("name", is("claire"))
+            .body("email", is("claire@gmail.com"));
     // @formatter:on
   }
 }
