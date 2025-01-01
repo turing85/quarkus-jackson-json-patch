@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 
 @QuarkusTest
 @TestHTTPEndpoint(Endpoint.class)
@@ -25,7 +26,7 @@ class EndpointTest {
   URI uri;
 
   @Test
-  void whenPatchAlice_thenAllGood() {
+  void whenPatchReplaceAlice_thenAllGood() {
     // given
     // @formatter:off
     RestAssured
@@ -50,39 +51,64 @@ class EndpointTest {
 
     // then
         .then()
-            .statusCode(is(Response.Status.OK.getStatusCode()))
+            .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(
                 HttpHeaders.LOCATION,
                 UriBuilder.fromUri(uri).path("alice wonder").build().toASCIIString())
-            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body("name", is("alice wonder"))
             .body("email", is("alice@wonder.land"));
     RestAssured
         .when().get("alice wonder")
         .then()
-            .statusCode(is(Response.Status.OK.getStatusCode()))
+            .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body("name", is("alice wonder"))
             .body("email", is("alice@wonder.land"));
     // @formatter:on
   }
 
   @Test
-  void whenGetBob_thenAllGood() {
+  void whenPatchDeleteBob_thenAllGood() {
+    // given
     // @formatter:off
     RestAssured
-        .when().get("bob")
+        .given()
+            .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
+            .body("""
+                [
+                  {
+                    "op": "remove",
+                    "path": "/email"
+                  }
+                ]""")
+
+    // when
+        .when().patch("bob")
+
+    // then
         .then()
-            .statusCode(is(Response.Status.OK.getStatusCode()))
+            .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
                 UriBuilder.fromUri(uri).path("bob").build().toASCIIString())
             .body("name", is("bob"))
-            .body("email", is("bob@gmail.com"));
+            .body("email", is(nullValue()));
+    RestAssured
+        .when().get("bob")
+        .then()
+            .statusCode(Response.Status.OK.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .header(
+                HttpHeaders.LOCATION,
+                UriBuilder.fromUri(uri).path("bob").build().toASCIIString())
+            .body("name", is("bob"))
+            .body("email", is(nullValue()));
     // @formatter:on
   }
 
@@ -92,9 +118,9 @@ class EndpointTest {
     RestAssured
         .when().get("unknown")
         .then()
-            .statusCode(is(Response.Status.NOT_FOUND.getStatusCode()))
+            .statusCode(Response.Status.NOT_FOUND.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     // @formatter:on
   }
 
@@ -124,15 +150,15 @@ class EndpointTest {
 
     // then
         .then()
-            .statusCode(is(Response.Status.BAD_REQUEST.getStatusCode()))
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     RestAssured
         .when().get("claire")
         .then()
-            .statusCode(is(Response.Status.OK.getStatusCode()))
+            .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
                 UriBuilder.fromUri(uri).path("claire").build().toASCIIString())
