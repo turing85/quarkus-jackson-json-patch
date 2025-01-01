@@ -4,7 +4,7 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
-import de.turing85.quarkus.json.patch.User;
+import de.turing85.quarkus.json.patch.api.User;
 import de.turing85.quarkus.json.patch.exception.mapper.Error;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;

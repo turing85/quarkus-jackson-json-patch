@@ -1,9 +1,7 @@
 package de.turing85.quarkus.json.patch;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -15,12 +13,14 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
+import de.turing85.quarkus.json.patch.api.User;
+import de.turing85.quarkus.json.patch.api.UserDao;
 import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
 import de.turing85.quarkus.json.patch.openapi.OpenApiDefinition;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.tuples.Tuple2;
+import io.smallrye.mutiny.unchecked.Unchecked;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -36,32 +36,19 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "Users")
 public final class Endpoint {
   static final String PATH = "users";
-
-  // @formatter:off
-  private static final List<User> USERS =
-      new ArrayList<>(List.of(
-          UserDto.builder()
-              .name("alice")
-              .email("alice@gmail.com")
-              .build(),
-          UserDto.builder()
-              .name("bob")
-              .email("bob@gmail.com")
-              .build(),
-          UserDto.builder()
-              .name("claire")
-              .email("claire@gmail.com")
-              .build()));
-  // @formatter:on
   private static final URI PATH_URI = URI.create(PATH);
 
+  private final UserDao userDao;
   private final Patcher patcher;
 
   @GET
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS, responseCode = "200")
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getAllUsers() {
-    return Uni.createFrom().item(allUsersToResponse());
+    // @formatter:off
+    return Uni.createFrom().item(userDao.findAll())
+        .onItem().transform(Endpoint::toResponse);
+    // @formatter:on
   }
 
   @GET
@@ -70,8 +57,11 @@ public final class Endpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getUserByName(@PathParam("name") String name) {
-    final User found = findByName(name);
-    return Uni.createFrom().item(toResponse(found));
+    // @formatter:off
+    return Uni.createFrom().item(name)
+        .onItem().transform(userDao::findByName)
+        .onItem().transform(Endpoint::toResponse);
+    // @formatter:on
   }
 
   @PATCH
@@ -82,34 +72,33 @@ public final class Endpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> patchUserByName(@PathParam("name") String name,
-      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonPatch patch)
-      throws JsonProcessingException, JsonPatchException {
-    final User original = findByName(name);
-    final User updated = getPatcher().patch(original, patch);
-    USERS.remove(original);
-    USERS.add(updated);
-    return Uni.createFrom().item(toResponse(updated));
-  }
-
-  private static Response allUsersToResponse() {
-    return Response.ok(USERS).location(PATH_URI).build();
-  }
-
-  private static User findByName(String name) {
+      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonPatch patch) {
     // @formatter:off
-    return USERS.stream()
-        .filter(user -> user.getName().equals(name))
-        .findFirst()
-        .orElseThrow(() -> new NoSuchElementException("User not found"));
+    return Uni.createFrom().item(name)
+        .onItem().transform(userDao::findByName)
+        .onItem().transform(Unchecked.function(user -> Tuple2.of(user, patcher.patch(user, patch))))
+        .onItem().invoke(tuple -> userDao.delete(tuple.getItem1()))
+        .onItem().invoke(tuple -> userDao.add(tuple.getItem2()))
+        .onItem().transform(Tuple2::getItem2)
+        .onItem().transform(Endpoint::toResponse);
+    // @formatter:on
+  }
+
+  private static Response toResponse(List<User> users) {
+    // @formatter:off
+    return Response
+        .ok(users)
+        .location(PATH_URI)
+        .build();
     // @formatter:on
   }
 
   private static Response toResponse(User user) {
     // @formatter:off
     return Response
-        .ok(user)
-        .location(UriBuilder.fromUri(PATH_URI).path(user.getName()).build())
-        .build();
+            .ok(user)
+            .location(UriBuilder.fromUri(PATH_URI).path(user.getName()).build())
+            .build();
     // @formatter:on
   }
 }

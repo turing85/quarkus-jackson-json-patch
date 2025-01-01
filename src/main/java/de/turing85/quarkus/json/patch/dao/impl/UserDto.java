@@ -1,5 +1,6 @@
-package de.turing85.quarkus.json.patch;
+package de.turing85.quarkus.json.patch.dao.impl;
 
+import de.turing85.quarkus.json.patch.api.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
