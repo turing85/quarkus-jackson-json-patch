@@ -10,6 +10,6 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
 @RegisterForReflection
-public final class ErrorDto {
+public final class Error {
   private final String message;
 }

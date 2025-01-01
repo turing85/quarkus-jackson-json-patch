@@ -18,16 +18,22 @@ import jakarta.ws.rs.core.UriBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
+import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
+import de.turing85.quarkus.json.patch.openapi.OpenApiDefinition;
 import io.smallrye.mutiny.Uni;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path(Endpoint.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RequiredArgsConstructor
 @Getter(AccessLevel.PRIVATE)
+@Tag(name = "Users")
 public final class Endpoint {
   static final String PATH = "users";
 
@@ -52,12 +58,17 @@ public final class Endpoint {
   private final Patcher patcher;
 
   @GET
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getAllUsers() {
     return Uni.createFrom().item(allUsersToResponse());
   }
 
   @GET
   @Path("{name}")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getUserByName(@PathParam("name") String name) {
     final User found = findByName(name);
     return Uni.createFrom().item(toResponse(found));
@@ -66,7 +77,12 @@ public final class Endpoint {
   @PATCH
   @Path("{name}")
   @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
-  public Uni<Response> patchUserByName(@PathParam("name") String name, JsonPatch patch)
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_BAD_REQUEST)
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
+  public Uni<Response> patchUserByName(@PathParam("name") String name,
+      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonPatch patch)
       throws JsonProcessingException, JsonPatchException {
     final User original = findByName(name);
     final User updated = getPatcher().patch(original, patch);

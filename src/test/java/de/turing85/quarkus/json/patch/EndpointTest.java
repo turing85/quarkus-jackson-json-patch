@@ -14,6 +14,7 @@ import org.jboss.resteasy.reactive.common.util.Encode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 @QuarkusTest
 @TestHTTPEndpoint(Endpoint.class)
@@ -52,6 +53,7 @@ class EndpointTest {
             .statusCode(is(Response.Status.OK.getStatusCode()))
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.LOCATION, "%s/%s".formatted(url, Encode.encodePath("alice wonder")))
+            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
             .body("name", is("alice wonder"))
             .body("email", is("alice@wonder.land"));
     RestAssured
@@ -59,6 +61,7 @@ class EndpointTest {
         .then()
             .statusCode(is(Response.Status.OK.getStatusCode()))
             .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
             .body("name", is("alice wonder"))
             .body("email", is("alice@wonder.land"));
     // @formatter:on
@@ -72,6 +75,7 @@ class EndpointTest {
         .then()
             .statusCode(is(Response.Status.OK.getStatusCode()))
             .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
             .header(HttpHeaders.LOCATION, "%s/%s".formatted(url, "bob"))
             .body("name", is("bob"))
             .body("email", is("bob@gmail.com"));
@@ -85,7 +89,8 @@ class EndpointTest {
         .when().get("unknown")
         .then()
             .statusCode(is(Response.Status.NOT_FOUND.getStatusCode()))
-            .contentType(MediaType.APPLICATION_JSON);
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()));
     // @formatter:on
   }
 
@@ -111,7 +116,8 @@ class EndpointTest {
         .when().patch("claire")
         .then()
             .statusCode(is(Response.Status.BAD_REQUEST.getStatusCode()))
-            .contentType(MediaType.APPLICATION_JSON);
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()));
     // @formatter:on
   }
 }
