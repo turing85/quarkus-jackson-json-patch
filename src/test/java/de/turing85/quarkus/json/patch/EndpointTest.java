@@ -1,16 +1,16 @@
 package de.turing85.quarkus.json.patch;
 
-import java.net.URL;
+import java.net.URI;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import org.jboss.resteasy.reactive.common.util.Encode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -22,7 +22,7 @@ class EndpointTest {
 
   @TestHTTPEndpoint(Endpoint.class)
   @TestHTTPResource
-  URL url;
+  URI uri;
 
   @Test
   void whenPatchAlice_thenAllGood() {
@@ -52,7 +52,9 @@ class EndpointTest {
         .then()
             .statusCode(is(Response.Status.OK.getStatusCode()))
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.LOCATION, "%s/%s".formatted(url, Encode.encodePath("alice wonder")))
+            .header(
+                HttpHeaders.LOCATION,
+                UriBuilder.fromUri(uri).path("alice wonder").build().toASCIIString())
             .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
             .body("name", is("alice wonder"))
             .body("email", is("alice@wonder.land"));
@@ -76,7 +78,9 @@ class EndpointTest {
             .statusCode(is(Response.Status.OK.getStatusCode()))
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is (notNullValue()))
-            .header(HttpHeaders.LOCATION, "%s/%s".formatted(url, "bob"))
+            .header(
+                HttpHeaders.LOCATION,
+                UriBuilder.fromUri(uri).path("bob").build().toASCIIString())
             .body("name", is("bob"))
             .body("email", is("bob@gmail.com"));
     // @formatter:on
