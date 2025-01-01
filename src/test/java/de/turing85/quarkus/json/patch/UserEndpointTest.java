@@ -18,10 +18,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 
 @QuarkusTest
-@TestHTTPEndpoint(Endpoint.class)
-class EndpointTest {
+@TestHTTPEndpoint(UserEndpoint.class)
+class UserEndpointTest {
 
-  @TestHTTPEndpoint(Endpoint.class)
+  @TestHTTPEndpoint(UserEndpoint.class)
   @TestHTTPResource
   URI uri;
 

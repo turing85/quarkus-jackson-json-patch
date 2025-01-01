@@ -28,13 +28,13 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path(Endpoint.PATH)
+@Path(UserEndpoint.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @RequiredArgsConstructor
 @Getter(AccessLevel.PRIVATE)
 @Tag(name = "Users")
-public final class Endpoint {
+public final class UserEndpoint {
   static final String PATH = "users";
   private static final URI PATH_URI = URI.create(PATH);
 
@@ -47,7 +47,7 @@ public final class Endpoint {
   public Uni<Response> getAllUsers() {
     // @formatter:off
     return Uni.createFrom().item(userDao.findAll())
-        .onItem().transform(Endpoint::toResponse);
+        .onItem().transform(UserEndpoint::toResponse);
     // @formatter:on
   }
 
@@ -60,7 +60,7 @@ public final class Endpoint {
     // @formatter:off
     return Uni.createFrom().item(name)
         .onItem().transform(userDao::findByName)
-        .onItem().transform(Endpoint::toResponse);
+        .onItem().transform(UserEndpoint::toResponse);
     // @formatter:on
   }
 
@@ -80,7 +80,7 @@ public final class Endpoint {
         .onItem().invoke(tuple -> userDao.delete(tuple.getItem1()))
         .onItem().invoke(tuple -> userDao.add(tuple.getItem2()))
         .onItem().transform(Tuple2::getItem2)
-        .onItem().transform(Endpoint::toResponse);
+        .onItem().transform(UserEndpoint::toResponse);
     // @formatter:on
   }
 

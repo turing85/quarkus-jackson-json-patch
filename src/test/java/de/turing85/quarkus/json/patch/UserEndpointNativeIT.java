@@ -4,6 +4,6 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-@TestHTTPEndpoint(Endpoint.class)
-class EndpointNativeIT extends EndpointTest {
+@TestHTTPEndpoint(UserEndpoint.class)
+class UserEndpointNativeIT extends UserEndpointTest {
 }
