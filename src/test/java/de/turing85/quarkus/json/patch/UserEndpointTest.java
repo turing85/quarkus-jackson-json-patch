@@ -20,7 +20,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 @QuarkusTest
 @TestHTTPEndpoint(UserEndpoint.class)
 class UserEndpointTest {
-
   @TestHTTPEndpoint(UserEndpoint.class)
   @TestHTTPResource
   URI uri;
@@ -34,6 +33,11 @@ class UserEndpointTest {
             .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
             .body("""
                 [
+                  {
+                    "op": "test",
+                    "path": "/name",
+                    "value": "alice"
+                  },
                   {
                     "op": "replace",
                     "path": "/name",
@@ -113,19 +117,93 @@ class UserEndpointTest {
   }
 
   @Test
-  void whenGetUnknown_thenGetNotFound() {
+  void whenPatchMoveClaire_thenAllGood() {
+    // given
     // @formatter:off
     RestAssured
-        .when().get("unknown")
+        .given()
+        .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
+        .body("""
+                [
+                  {
+                    "op": "move",
+                    "from": "/email",
+                    "path": "/name"
+                  }
+                ]""")
+
+        // when
+        .when().patch("claire")
+
+        // then
         .then()
-            .statusCode(Response.Status.NOT_FOUND.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+        .statusCode(Response.Status.OK.getStatusCode())
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+        .header(
+            HttpHeaders.LOCATION,
+            UriBuilder.fromUri(uri).path("claire@gmail.com").build().toASCIIString())
+        .body("name", is("claire@gmail.com"))
+        .body("email", is(nullValue()));
+    RestAssured
+        .when().get("claire@gmail.com")
+        .then()
+        .statusCode(Response.Status.OK.getStatusCode())
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+        .header(
+            HttpHeaders.LOCATION,
+            UriBuilder.fromUri(uri).path("claire@gmail.com").build().toASCIIString())
+        .body("name", is("claire@gmail.com"))
+        .body("email", is(nullValue()));
     // @formatter:on
   }
 
   @Test
-  void whenPatchUnknownField_thenGetBadRequest() {
+  void whenPatchCopyDaphne_thenAllGood() {
+    // given
+    // @formatter:off
+    RestAssured
+        .given()
+        .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
+        .body("""
+                [
+                  {
+                    "op": "copy",
+                    "from": "/email",
+                    "path": "/name"
+                  }
+                ]""")
+
+        // when
+        .when().patch("daphne")
+
+        // then
+        .then()
+        .statusCode(Response.Status.OK.getStatusCode())
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+        .header(
+            HttpHeaders.LOCATION,
+            UriBuilder.fromUri(uri).path("daphne@gmail.com").build().toASCIIString())
+        .body("name", is("daphne@gmail.com"))
+        .body("email", is("daphne@gmail.com"));
+    RestAssured
+        .when().get("daphne@gmail.com")
+        .then()
+        .statusCode(Response.Status.OK.getStatusCode())
+        .contentType(MediaType.APPLICATION_JSON)
+        .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+        .header(
+            HttpHeaders.LOCATION,
+            UriBuilder.fromUri(uri).path("daphne@gmail.com").build().toASCIIString())
+        .body("name", is("daphne@gmail.com"))
+        .body("email", is("daphne@gmail.com"));
+    // @formatter:on
+  }
+
+  @Test
+  void whenPatchUnknownFieldElvira_thenGetBadRequest() {
     // given
     // @formatter:off
     RestAssured
@@ -136,7 +214,7 @@ class UserEndpointTest {
                   {
                     "op": "replace",
                     "path": "/email",
-                    "value": "claire@clear.com"
+                    "value": "elvira@enve.lope"
                   },
                   {
                     "op": "replace",
@@ -146,7 +224,7 @@ class UserEndpointTest {
                 ]""")
 
     // when
-        .when().patch("claire")
+        .when().patch("elvira")
 
     // then
         .then()
@@ -154,16 +232,59 @@ class UserEndpointTest {
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     RestAssured
-        .when().get("claire")
+        .when().get("elvira")
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path("claire").build().toASCIIString())
-            .body("name", is("claire"))
-            .body("email", is("claire@gmail.com"));
+                UriBuilder.fromUri(uri).path("elvira").build().toASCIIString())
+            .body("name", is("elvira"))
+            .body("email", is("elvira@gmail.com"));
+    // @formatter:on
+  }
+
+  @Test
+  void whenPatchTEstFailsElvira_thenGetBadRequest() {
+    // given
+    // @formatter:off
+    RestAssured
+        .given()
+            .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
+            .body("""
+                [
+                  {
+                    "op": "test",
+                    "path": "/name",
+                    "value": "not elvira"
+                  },
+                  {
+                    "op": "replace",
+                    "path": "/email",
+                    "value": "elvira@enve.lope"
+                  }
+                ]""")
+
+        // when
+        .when().patch("elvira")
+
+        // then
+        .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+    RestAssured
+        .when().get("elvira")
+        .then()
+            .statusCode(Response.Status.OK.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .header(
+                HttpHeaders.LOCATION,
+                UriBuilder.fromUri(uri).path("elvira").build().toASCIIString())
+            .body("name", is("elvira"))
+            .body("email", is("elvira@gmail.com"));
     // @formatter:on
   }
 }

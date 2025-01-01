@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import io.quarkus.smallrye.openapi.OpenApiFilter;
 import io.smallrye.openapi.internal.models.Components;
+import io.smallrye.openapi.internal.models.examples.Example;
 import io.smallrye.openapi.internal.models.media.Content;
 import io.smallrye.openapi.internal.models.media.Schema;
 import io.smallrye.openapi.internal.models.parameters.RequestBody;
@@ -59,12 +60,79 @@ public class JsonPatchOpenApiFilter implements OASFilter {
     io.smallrye.openapi.internal.models.media.MediaType jsonPatchMediaType =
         new io.smallrye.openapi.internal.models.media.MediaType();
     jsonPatchMediaType.setSchema(jsonPatchSchemaRef);
-    jsonPatchMediaType.setExample("""
-        {
-          "op": "replace",
-          "path": "/email",
-          "value": "new@email.com"
-        }""");
+    // @formatter:off
+    jsonPatchMediaType
+        .addExample(
+            "replace",
+            constructEXample("""
+                [
+                  {
+                    "op": "replace",
+                    "path": "/email",
+                    "value": "new@email.com"
+                  }
+                ]"""))
+        .addExample(
+            "remove",
+            constructEXample("""
+                [
+                  {
+                    "op": "remove",
+                    "path": "/email"
+                  }
+                ]"""))
+        .addExample(
+            "copy",
+            constructEXample("""
+                [
+                  {
+                    "op": "copy",
+                    "from": "/email",
+                    "path": "/name"
+                  }
+                ]"""))
+        .addExample(
+            "move",
+            constructEXample("""
+                [
+                  {
+                    "op": "move",
+                    "from": "/email",
+                    "path": "/name"
+                  }
+                ]"""))
+        .addExample(
+            "test",
+            constructEXample("""
+                [
+                  {
+                    "op": "test",
+                    "path": "/name",
+                    "value": "alice"
+                  }
+                ]"""))
+        .addExample(
+            "test and copy",
+            constructEXample("""
+                [
+                  {
+                    "op": "test",
+                    "path": "/name",
+                    "value": "alice"
+                  },
+                  {
+                    "op": "copy",
+                    "from": "/email",
+                    "path": "/name"
+                  }
+                ]"""));
+    // @formatter:on
     return jsonPatchMediaType;
+  }
+
+  private static Example constructEXample(String value) {
+    Example example = new Example();
+    example.setValue(value);
+    return example;
   }
 }

@@ -26,6 +26,14 @@ public class InMemoryUserDao implements UserDao {
           InMemoryUser.builder()
               .name("claire")
               .email("claire@gmail.com")
+              .build(),
+          InMemoryUser.builder()
+              .name("daphne")
+              .email("daphne@gmail.com")
+              .build(),
+          InMemoryUser.builder()
+              .name("elvira")
+              .email("elvira@gmail.com")
               .build()));
   // @formatter:on
 
