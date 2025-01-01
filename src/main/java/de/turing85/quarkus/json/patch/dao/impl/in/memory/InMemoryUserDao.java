@@ -1,4 +1,4 @@
-package de.turing85.quarkus.json.patch.dao.impl;
+package de.turing85.quarkus.json.patch.dao.impl.in.memory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,19 +11,19 @@ import de.turing85.quarkus.json.patch.api.User;
 import de.turing85.quarkus.json.patch.api.UserDao;
 
 @ApplicationScoped
-public class UserDaoImpl implements UserDao {
+public class InMemoryUserDao implements UserDao {
   // @formatter:off
-  private static final List<User> USERS =
+  private static final List<InMemoryUser> USERS =
       new ArrayList<>(List.of(
-          UserDto.builder()
+          InMemoryUser.builder()
               .name("alice")
               .email("alice@gmail.com")
               .build(),
-          UserDto.builder()
+          InMemoryUser.builder()
               .name("bob")
               .email("bob@gmail.com")
               .build(),
-          UserDto.builder()
+          InMemoryUser.builder()
               .name("claire")
               .email("claire@gmail.com")
               .build()));
@@ -46,11 +46,11 @@ public class UserDaoImpl implements UserDao {
 
   @Override
   public void add(User user) {
-    USERS.add(user);
+    USERS.add(InMemoryUser.from(user));
   }
 
   @Override
   public void delete(User user) {
-    USERS.remove(user);
+    USERS.remove(InMemoryUser.from(user));
   }
 }
