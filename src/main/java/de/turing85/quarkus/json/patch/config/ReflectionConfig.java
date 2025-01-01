@@ -7,8 +7,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
     targets = {
         com.github.fge.jackson.NodeType.class,
         com.github.fge.jackson.jsonpointer.JsonPointer.class,
-        com.github.fge.jackson.jsonpointer.JsonPointerException.class,
-        com.github.fge.jackson.jsonpointer.JsonPointerMessages.class,
         com.github.fge.jackson.jsonpointer.ReferenceToken.class,
         com.github.fge.jackson.jsonpointer.TreePointer.class,
 
@@ -17,8 +15,6 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
         com.github.fge.jsonpatch.DualPathOperation.class,
         com.github.fge.jsonpatch.Iterables.class,
         com.github.fge.jsonpatch.JsonPatch.class,
-        com.github.fge.jsonpatch.JsonPatchException.class,
-        com.github.fge.jsonpatch.JsonPatchMessages.class,
         com.github.fge.jsonpatch.JsonPatchOperation.class,
         com.github.fge.jsonpatch.MoveOperation.class,
         com.github.fge.jsonpatch.Patch.class,
