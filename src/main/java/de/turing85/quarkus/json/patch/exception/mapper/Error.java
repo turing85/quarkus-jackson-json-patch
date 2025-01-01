@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Builder
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @RegisterForReflection
 public final class Error {

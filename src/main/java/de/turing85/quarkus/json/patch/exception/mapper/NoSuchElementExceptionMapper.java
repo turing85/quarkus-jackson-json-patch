@@ -7,6 +7,7 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.UnwrapException;
 
 @Provider
@@ -14,6 +15,12 @@ import org.jboss.resteasy.reactive.server.UnwrapException;
 @UnwrapException(RuntimeException.class)
 public final class NoSuchElementExceptionMapper
     extends BaseExceptionMapper<NoSuchElementException> {
+
+  NoSuchElementExceptionMapper(Logger logger) {
+    super(logger);
+  }
+
+  @Override
   protected int status() {
     return Response.Status.NOT_FOUND.getStatusCode();
   }

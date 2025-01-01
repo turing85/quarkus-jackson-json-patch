@@ -7,10 +7,22 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
+import org.jboss.logging.Logger;
+
 @Provider
 @Priority(Priorities.USER + 100)
 public final class ThrowableExceptionMapper extends BaseExceptionMapper<NoSuchElementException> {
+  ThrowableExceptionMapper(Logger logger) {
+    super(logger);
+  }
+
+  @Override
   protected int status() {
     return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+  }
+
+  @Override
+  protected Logger.Level level() {
+    return Logger.Level.ERROR;
   }
 }
