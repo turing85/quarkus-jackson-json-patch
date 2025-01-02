@@ -1,4 +1,4 @@
-package de.turing85.quarkus.json.patch.api.request;
+package de.turing85.quarkus.json.patch.api.response;
 
 import de.turing85.quarkus.json.patch.spi.User;
 import lombok.Builder;
@@ -8,13 +8,13 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Jacksonized
 @Builder
-public class CreateUserRequest {
+public class UserResponse {
   String name;
   String email;
 
-  public static CreateUserRequest from(User user) {
+  public static UserResponse from(User user) {
     // @formatter:off
-    return CreateUserRequest.builder()
+    return UserResponse.builder()
         .name(user.getName())
         .email(user.getEmail())
         .build();

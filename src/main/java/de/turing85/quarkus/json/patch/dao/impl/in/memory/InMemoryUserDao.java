@@ -8,9 +8,10 @@ import java.util.NoSuchElementException;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
-import de.turing85.quarkus.json.patch.api.response.User;
+import de.turing85.quarkus.json.patch.spi.User;
 import de.turing85.quarkus.json.patch.exception.EntityAlreadyExistsException;
 import de.turing85.quarkus.json.patch.spi.UserDao;
+import io.quarkus.logging.Log;
 
 @ApplicationScoped
 public class InMemoryUserDao implements UserDao {
@@ -32,9 +33,14 @@ public class InMemoryUserDao implements UserDao {
         .name(request.getName())
         .email(request.getEmail())
         .build();
+    return create(user);
+  // @formatter:on
+  }
+
+  public User create(User user) {
+    Log.infof("Creating user with name \"%s\"", user.getName());
     USERS.add(InMemoryUser.from(user));
     return user;
-  // @formatter:on
   }
 
   @Override
@@ -49,6 +55,7 @@ public class InMemoryUserDao implements UserDao {
 
   @Override
   public void delete(User user) {
+    Log.infof("Deleting user with name \"%s\"", user.getName());
     USERS.remove(InMemoryUser.from(user));
   }
 
