@@ -7,39 +7,34 @@ import java.util.NoSuchElementException;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
-import de.turing85.quarkus.json.patch.api.User;
-import de.turing85.quarkus.json.patch.api.UserDao;
+import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
+import de.turing85.quarkus.json.patch.api.response.User;
+import de.turing85.quarkus.json.patch.exception.EntityAlreadyExistsException;
+import de.turing85.quarkus.json.patch.spi.UserDao;
 
 @ApplicationScoped
 public class InMemoryUserDao implements UserDao {
-  // @formatter:off
-  private static final List<InMemoryUser> USERS =
-      new ArrayList<>(List.of(
-          InMemoryUser.builder()
-              .name("alice")
-              .email("alice@gmail.com")
-              .build(),
-          InMemoryUser.builder()
-              .name("bob")
-              .email("bob@gmail.com")
-              .build(),
-          InMemoryUser.builder()
-              .name("claire")
-              .email("claire@gmail.com")
-              .build(),
-          InMemoryUser.builder()
-              .name("daphne")
-              .email("daphne@gmail.com")
-              .build(),
-          InMemoryUser.builder()
-              .name("elvira")
-              .email("elvira@gmail.com")
-              .build()));
-  // @formatter:on
+  private static final List<InMemoryUser> USERS = new ArrayList<>();
 
   @Override
   public List<User> findAll() {
     return Collections.unmodifiableList(USERS);
+  }
+
+  @Override
+  public User create(CreateUserRequest request) {
+    if (USERS.stream().anyMatch(u -> u.getName().equals(request.getName()))) {
+      throw EntityAlreadyExistsException
+          .of("User with name \"%s\" already exists".formatted(request.getName()));
+    }
+    // @formatter:off
+    final User user = InMemoryUser.builder()
+        .name(request.getName())
+        .email(request.getEmail())
+        .build();
+    USERS.add(InMemoryUser.from(user));
+    return user;
+  // @formatter:on
   }
 
   @Override
@@ -53,12 +48,17 @@ public class InMemoryUserDao implements UserDao {
   }
 
   @Override
-  public void add(User user) {
-    USERS.add(InMemoryUser.from(user));
+  public void delete(User user) {
+    USERS.remove(InMemoryUser.from(user));
   }
 
   @Override
-  public void delete(User user) {
-    USERS.remove(InMemoryUser.from(user));
+  public void deleteByName(String name) {
+    USERS.stream().filter(user -> user.getName().equals(name)).toList().forEach(USERS::remove);
+  }
+
+  @Override
+  public void deleteAll() {
+    USERS.clear();
   }
 }

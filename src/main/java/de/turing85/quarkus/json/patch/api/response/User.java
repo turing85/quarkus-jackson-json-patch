@@ -1,4 +1,4 @@
-package de.turing85.quarkus.json.patch.api;
+package de.turing85.quarkus.json.patch.api.response;
 
 @SuppressWarnings("unused")
 public interface User {

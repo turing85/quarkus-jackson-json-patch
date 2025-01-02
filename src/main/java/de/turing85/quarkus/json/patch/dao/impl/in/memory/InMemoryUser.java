@@ -1,26 +1,24 @@
 package de.turing85.quarkus.json.patch.dao.impl.in.memory;
 
-import de.turing85.quarkus.json.patch.api.User;
+import de.turing85.quarkus.json.patch.api.response.User;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+@Value
 @Jacksonized
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class InMemoryUser implements User {
+public class InMemoryUser implements User {
   @lombok.Builder.Default
-  private final String name = null;
+  String name = null;
 
   @lombok.Builder.Default
-  private final String email = null;
+  String email = null;
 
   static InMemoryUser from(User user) {
     return new InMemoryUser(user.getName(), user.getEmail());

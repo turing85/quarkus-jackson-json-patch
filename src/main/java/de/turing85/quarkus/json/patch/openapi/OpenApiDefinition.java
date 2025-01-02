@@ -4,7 +4,8 @@ import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
-import de.turing85.quarkus.json.patch.api.User;
+import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
+import de.turing85.quarkus.json.patch.api.response.User;
 import de.turing85.quarkus.json.patch.exception.mapper.Error;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
@@ -15,6 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 // @formatter:off
@@ -70,8 +72,23 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 ref = OpenApiDefinition.SCHEMA_USER,
                 type = SchemaType.ARRAY),
             @Schema(
+                name = OpenApiDefinition.SCHEMA_USER_CREATE,
+                implementation = CreateUserRequest.class),
+            @Schema(
                 name = OpenApiDefinition.SCHEMA_ERROR,
                 implementation = Error.class),
+        },
+        requestBodies = {
+          @RequestBody(
+              name = OpenApiDefinition.REQUEST_CREATE_USER,
+              content = @Content(
+                  mediaType = MediaType.APPLICATION_JSON,
+                  schema = @Schema(ref = OpenApiDefinition.SCHEMA_USER_CREATE),
+                  example = """
+                      {
+                        "name": "alice",
+                        "email": "alice@gmail.com"
+                      }""")),
         },
         responses = {
             @APIResponse(
@@ -160,13 +177,15 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                         }"""))}))
 // @formatter:on
 public class OpenApiDefinition extends Application {
-  public static final String RESPONSE_BAD_REQUEST = "BadRequest";
-  public static final String RESPONSE_NOT_FOUND = "NotFound";
-  public static final String RESPONSE_INTERNAL_SERVER_ERROR = "InternalServerError";
+  public static final String PARAM_PATH_NAME = "name";
+  public static final String REQUEST_CREATE_USER = "Create User Request";
+  public static final String RESPONSE_BAD_REQUEST = "Bad Request";
+  public static final String RESPONSE_INTERNAL_SERVER_ERROR = "Internal Server Error";
+  public static final String RESPONSE_NOT_FOUND = "Not Found";
   public static final String RESPONSE_USER = "User";
   public static final String RESPONSE_USERS = "Users";
   public static final String SCHEMA_ERROR = "Error";
+  public static final String SCHEMA_USER_CREATE = "Create User";
   public static final String SCHEMA_USER = "User";
   public static final String SCHEMA_USERS = "Users";
-  public static final String PARAM_PATH_NAME = "name";
 }
