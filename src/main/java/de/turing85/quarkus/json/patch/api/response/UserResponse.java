@@ -1,4 +1,4 @@
-package de.turing85.quarkus.json.patch.api.request;
+package de.turing85.quarkus.json.patch.api.response;
 
 import de.turing85.quarkus.json.patch.spi.User;
 import lombok.AccessLevel;
@@ -11,11 +11,11 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateUserRequest {
+public class UserResponse {
   String name;
   String email;
 
-  public static CreateUserRequest from(User user) {
-    return new CreateUserRequest(user.getName(), user.getEmail());
+  public static UserResponse from(User user) {
+    return new UserResponse(user.getName(), user.getEmail());
   }
 }

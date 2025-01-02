@@ -18,9 +18,10 @@ import jakarta.ws.rs.core.UriBuilder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
-import de.turing85.quarkus.json.patch.api.response.User;
+import de.turing85.quarkus.json.patch.api.response.UserResponse;
 import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
 import de.turing85.quarkus.json.patch.openapi.OpenApiDefinition;
+import de.turing85.quarkus.json.patch.spi.User;
 import de.turing85.quarkus.json.patch.spi.UserDao;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
@@ -52,8 +53,9 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getAllUsers() {
     // @formatter:off
-    return Uni.createFrom().item(userDao.findAll())
-        .onItem().transform(UserEndpoint::toOkResponse);
+    return Uni
+        .createFrom().item(userDao::findAll)
+        .map(UserEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -64,9 +66,10 @@ public final class UserEndpoint {
   public Uni<Response> createUser(
       @RequestBody(ref = OpenApiDefinition.REQUEST_CREATE_USER) CreateUserRequest request) {
     // @formatter:off
-    return Uni.createFrom().item(request)
-        .onItem().transform(userDao::create)
-        .onItem().transform(UserEndpoint::toCreatedResponse);
+    return Uni
+        .createFrom().item(request)
+        .map(userDao::create)
+        .map(UserEndpoint::toCreatedResponse);
     // @formatter:on
   }
 
@@ -75,10 +78,10 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> deleteAllUsers() {
     // @formatter:off
-    return Uni.createFrom().voidItem()
-        .replaceWith(userDao.findAll())
-        .onItem().invoke(ignored -> userDao.deleteAll())
-        .onItem().transform(UserEndpoint::toOkResponse);
+    return Uni
+        .createFrom().item(userDao::findAll)
+        .invoke(ignored -> userDao.deleteAll())
+        .map(UserEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -91,9 +94,9 @@ public final class UserEndpoint {
   public Uni<Response> getUserByName(
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name) {
     // @formatter:off
-    return Uni.createFrom().item(name)
-        .onItem().transform(userDao::findByName)
-        .onItem().transform(UserEndpoint::toOkResponse);
+    return Uni
+        .createFrom().item(() -> userDao.findByName(name))
+        .map(UserEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -109,14 +112,12 @@ public final class UserEndpoint {
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name,
       @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonNode patch) {
     // @formatter:off
-    return Uni.createFrom().item(name)
-        .onItem().transform(userDao::findByName)
-        .onItem().transform(Unchecked.function(user -> Tuple2.of(user, patcher.patch(user, patch))))
-        .onItem().invoke(tuple -> userDao.delete(tuple.getItem1()))
-        .onItem().transform(Tuple2::getItem2)
-        .onItem().transform(CreateUserRequest::from)
-        .onItem().transform(userDao::create)
-        .onItem().transform(UserEndpoint::toOkResponse);
+    return Uni
+        .createFrom().item(() -> userDao.findByName(name))
+        .map(Unchecked.function(user -> Tuple2.of(user, patcher.patch(user, patch))))
+        .invoke(tuple -> userDao.delete(tuple.getItem1()))
+        .map(tuple -> userDao.create(tuple.getItem2()))
+        .map(UserEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -129,17 +130,18 @@ public final class UserEndpoint {
   public Uni<Response> deleteUserByName(
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name) {
     // @formatter:off
-    return Uni.createFrom().item(name)
-        .onItem().transform(userDao::findByName)
-        .onItem().invoke(user -> userDao.deleteByName(user.getName()))
-        .onItem().transform(UserEndpoint::toOkResponse);
+    return Uni
+        .createFrom().item(() -> userDao.findByName(name))
+        .invoke(user -> userDao.deleteByName(user.getName()))
+        .map(UserEndpoint::toOkResponse);
     // @formatter:on
   }
 
   private static Response toOkResponse(List<User> users) {
     // @formatter:off
     return Response
-        .ok(users)
+        .status(Response.Status.OK.getStatusCode())
+        .entity(users.stream().map(UserResponse::from).toList())
         .location(PATH_URI)
         .build();
     // @formatter:on
@@ -157,7 +159,7 @@ public final class UserEndpoint {
     // @formatter:off
     return Response
             .status(status)
-            .entity(user)
+            .entity(UserResponse.from(user))
             .location(UriBuilder.fromUri(PATH_URI).path(user.getName()).build())
             .build();
     // @formatter:on
