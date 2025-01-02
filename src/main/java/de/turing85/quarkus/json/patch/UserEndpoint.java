@@ -9,6 +9,7 @@ import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
@@ -24,6 +25,7 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -31,9 +33,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path(UserEndpoint.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Tag(name = "Users")
 @RequiredArgsConstructor
 @Getter(AccessLevel.PRIVATE)
-@Tag(name = "Users")
 public final class UserEndpoint {
   static final String PATH = "users";
   private static final URI PATH_URI = URI.create(PATH);
@@ -42,6 +44,7 @@ public final class UserEndpoint {
   private final Patcher patcher;
 
   @GET
+  @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS, responseCode = "200")
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getAllUsers() {
@@ -53,10 +56,12 @@ public final class UserEndpoint {
 
   @GET
   @Path("{name}")
+  @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> getUserByName(@PathParam("name") String name) {
+  public Uni<Response> getUserByName(
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name) {
     // @formatter:off
     return Uni.createFrom().item(name)
         .onItem().transform(userDao::findByName)
@@ -67,11 +72,13 @@ public final class UserEndpoint {
   @PATCH
   @Path("{name}")
   @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
+  @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
   @APIResponse(ref = OpenApiDefinition.RESPONSE_BAD_REQUEST)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> patchUserByName(@PathParam("name") String name,
+  public Uni<Response> patchUserByName(
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name,
       @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonNode patch) {
     // @formatter:off
     return Uni.createFrom().item(name)

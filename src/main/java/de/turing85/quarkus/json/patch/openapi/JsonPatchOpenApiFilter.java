@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.models.OpenAPI;
 @OpenApiFilter(OpenApiFilter.RunStage.BUILD)
 public class JsonPatchOpenApiFilter implements OASFilter {
   public static final String REQUEST_BODY_JSON_PATCH = "JsonPatch";
-  public static final String SCHEMA_JSON_PATCH = "JsonPatch";
+  public static final String SCHEMA_JSON_PATCH = "Json Patch";
 
   @Override
   public void filterOpenAPI(OpenAPI openApi) {
