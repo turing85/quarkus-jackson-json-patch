@@ -5,15 +5,17 @@ import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
-import com.github.fge.jsonpatch.JsonPatchException;
+import com.flipkart.zjsonpatch.JsonPatchApplicationException;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.UnwrapException;
 
 @Provider
 @Priority(Priorities.USER)
 @UnwrapException(RuntimeException.class)
-public final class JsonPatchExceptionMapper extends BaseExceptionMapper<JsonPatchException> {
-  JsonPatchExceptionMapper(Logger logger) {
+public final class JsonPatchApplicationExceptionMapper
+    extends BaseExceptionMapper<JsonPatchApplicationException> {
+
+  JsonPatchApplicationExceptionMapper(Logger logger) {
     super(logger);
   }
 

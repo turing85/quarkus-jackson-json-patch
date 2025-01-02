@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
-import com.github.fge.jsonpatch.JsonPatch;
+import com.fasterxml.jackson.databind.JsonNode;
 import de.turing85.quarkus.json.patch.api.User;
 import de.turing85.quarkus.json.patch.api.UserDao;
 import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
@@ -72,7 +72,7 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> patchUserByName(@PathParam("name") String name,
-      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonPatch patch) {
+      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonNode patch) {
     // @formatter:off
     return Uni.createFrom().item(name)
         .onItem().transform(userDao::findByName)

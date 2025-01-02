@@ -21,8 +21,8 @@
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
 
         <!-- Dependency versions -->
-        <json-patch.version>1.13</json-patch.version>
         <lombok.version>1.18.36</lombok.version>
+        <zjsonpatch.version>0.4.16</zjsonpatch.version>
 
         <!-- Quarkus versions -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -312,15 +312,15 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.java-json-tools</groupId>
-            <artifactId>json-patch</artifactId>
-            <version>${json-patch.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.flipkart.zjsonpatch</groupId>
+            <artifactId>zjsonpatch</artifactId>
+            <version>${zjsonpatch.version}</version>
         </dependency>
 
         <!-- Quarkus dependencies -->
