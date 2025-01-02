@@ -9,13 +9,11 @@ public interface UserDao {
 
   User create(CreateUserRequest request);
 
-  User create(User user);
-
   User findByName(String name);
-
-  void delete(User user);
 
   void deleteByName(String name);
 
   void deleteAll();
+
+  User update(String name, User user);
 }

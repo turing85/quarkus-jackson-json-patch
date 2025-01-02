@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.flipkart.zjsonpatch.InvalidJsonPatchException;
 import com.flipkart.zjsonpatch.JsonPatch;
 
 @Singleton
@@ -14,9 +15,9 @@ class JsonPatchValidator implements ConstraintValidator<IsJsonPatch, JsonNode> {
     try {
       JsonPatch.validate(value);
       return true;
-    } catch (Exception e) {
-      context.disableDefaultConstraintViolation();
-      context.buildConstraintViolationWithTemplate(e.getMessage()).addConstraintViolation();
+    } catch (InvalidJsonPatchException e) {
+      context.buildConstraintViolationWithTemplate(e.getMessage()).addConstraintViolation()
+          .disableDefaultConstraintViolation();
       return false;
     }
   }

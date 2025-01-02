@@ -24,8 +24,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 @DisplayName("User Endpoint")
 @TestHTTPEndpoint(UserEndpoint.class)
 class UserEndpointTest {
-  private static final InMemoryUser ALICE =
-      InMemoryUser.builder().name("alice").email("alice@gmail.com").build();
+  private static final InMemoryUser ALICE = new InMemoryUser("alice", "alice@gmail.com");
 
   @TestHTTPEndpoint(UserEndpoint.class)
   @TestHTTPResource
@@ -66,20 +65,20 @@ class UserEndpointTest {
             .statusCode(Response.Status.CREATED.getStatusCode())
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
+                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.getName()))
-            .body("email", is(ALICE.getEmail()));
+            .body("name", is(ALICE.name()))
+            .body("email", is(ALICE.email()));
     RestAssured
-        .when().get(ALICE.getName())
+        .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
+                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.getName()))
-            .body("email", is(ALICE.getEmail()));
+            .body("name", is(ALICE.name()))
+            .body("email", is(ALICE.email()));
     // @formatter:on
   }
 
@@ -89,20 +88,20 @@ class UserEndpointTest {
     // when
     // @formatter:off
     RestAssured
-        .when().delete(ALICE.getName())
+        .when().delete(ALICE.name())
 
     // when
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .header(
                     HttpHeaders.LOCATION,
-                    UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
+                    UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.getName()))
-            .body("email", is(ALICE.getEmail()));
+            .body("name", is(ALICE.name()))
+            .body("email", is(ALICE.email()));
     RestAssured
-        .when().get(ALICE.getName())
+        .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.NOT_FOUND.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
@@ -150,10 +149,10 @@ class UserEndpointTest {
                     "path": "/email",
                     "value": "%s"
                   }
-                ]""".formatted(ALICE.getName(), newName, newEmail))
+                ]""".formatted(ALICE.name(), newName, newEmail))
 
     // when
-        .when().patch(ALICE.getName())
+        .when().patch(ALICE.name())
 
     // then
         .then()
@@ -193,7 +192,7 @@ class UserEndpointTest {
                 ]""")
 
     // when
-        .when().patch(ALICE.getName())
+        .when().patch(ALICE.name())
 
     // then
         .then()
@@ -202,19 +201,19 @@ class UserEndpointTest {
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
-            .body("name", is(ALICE.getName()))
+                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
+            .body("name", is(ALICE.name()))
             .body("email", is(nullValue()));
     RestAssured
-        .when().get(ALICE.getName())
+        .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
-            .body("name", is(ALICE.getName()))
+                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
+            .body("name", is(ALICE.name()))
             .body("email", is(nullValue()));
     // @formatter:on
   }
@@ -237,7 +236,7 @@ class UserEndpointTest {
                     ]""")
 
         // when
-        .when().patch(ALICE.getName())
+        .when().patch(ALICE.name())
 
         // then
         .then()
@@ -246,19 +245,19 @@ class UserEndpointTest {
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getEmail()).build().toASCIIString())
-            .body("name", is(ALICE.getEmail()))
+                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
+            .body("name", is(ALICE.email()))
             .body("email", is(nullValue()));
     RestAssured
-        .when().get(ALICE.getEmail())
+        .when().get(ALICE.email())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getEmail()).build().toASCIIString())
-            .body("name", is(ALICE.getEmail()))
+                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
+            .body("name", is(ALICE.email()))
             .body("email", is(nullValue()));
     // @formatter:on
   }
@@ -281,7 +280,7 @@ class UserEndpointTest {
                     ]""")
 
         // when
-        .when().patch(ALICE.getName())
+        .when().patch(ALICE.name())
 
         // then
         .then()
@@ -290,20 +289,20 @@ class UserEndpointTest {
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getEmail()).build().toASCIIString())
-            .body("name", is(ALICE.getEmail()))
-            .body("email", is(ALICE.getEmail()));
+                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
+            .body("name", is(ALICE.email()))
+            .body("email", is(ALICE.email()));
     RestAssured
-        .when().get(ALICE.getEmail())
+        .when().get(ALICE.email())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getEmail()).build().toASCIIString())
-            .body("name", is(ALICE.getEmail()))
-            .body("email", is(ALICE.getEmail()));
+                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
+            .body("name", is(ALICE.email()))
+            .body("email", is(ALICE.email()));
     // @formatter:on
   }
 
@@ -330,7 +329,7 @@ class UserEndpointTest {
                 ]""")
 
     // when
-        .when().patch(ALICE.getName())
+        .when().patch(ALICE.name())
 
     // then
         .then()
@@ -338,16 +337,16 @@ class UserEndpointTest {
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     RestAssured
-        .when().get(ALICE.getName())
+        .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
-            .body("name", is(ALICE.getName()))
-            .body("email", is(ALICE.getEmail()));
+                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
+            .body("name", is(ALICE.name()))
+            .body("email", is(ALICE.email()));
     // @formatter:on
   }
 
@@ -374,7 +373,7 @@ class UserEndpointTest {
                 ]""")
 
         // when
-        .when().patch(ALICE.getName())
+        .when().patch(ALICE.name())
 
         // then
         .then()
@@ -382,16 +381,16 @@ class UserEndpointTest {
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     RestAssured
-        .when().get(ALICE.getName())
+        .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .header(
                 HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
-            .body("name", is(ALICE.getName()))
-            .body("email", is(ALICE.getEmail()));
+                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
+            .body("name", is(ALICE.name()))
+            .body("email", is(ALICE.email()));
     // @formatter:on
   }
 

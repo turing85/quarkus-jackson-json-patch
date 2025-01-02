@@ -1,21 +1,26 @@
 package de.turing85.quarkus.json.patch.api.request;
 
+import java.util.Objects;
+
 import de.turing85.quarkus.json.patch.spi.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
-@Value
-@Jacksonized
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateUserRequest {
-  String name;
-  String email;
-
+public record CreateUserRequest(String name, String email) implements User {
   public static CreateUserRequest from(User user) {
-    return new CreateUserRequest(user.getName(), user.getEmail());
+    return new CreateUserRequest(user.name(), user.email());
+  }
+
+  @Override
+  public boolean equals(Object that) {
+    if (this == that) {
+      return true;
+    }
+    return that instanceof CreateUserRequest(String thatName, String thatEmail)
+        && Objects.equals(name, thatName)
+        && Objects.equals(email, thatEmail);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, email);
   }
 }

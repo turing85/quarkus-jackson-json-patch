@@ -10,9 +10,9 @@ import jakarta.validation.Payload;
 
 @Constraint(validatedBy = JsonPatchValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 public @interface IsJsonPatch {
-  String message() default "%s";
+  String message() default "";
 
   Class<?>[] groups() default {};
 

@@ -22,44 +22,38 @@ public class InMemoryUserDao implements UserDao {
   }
 
   @Override
-  public User create(CreateUserRequest request) {
-    if (USERS.stream().anyMatch(u -> u.getName().equals(request.getName()))) {
+  public InMemoryUser create(CreateUserRequest request) {
+    if (USERS.stream().anyMatch(u -> u.name().equals(request.name()))) {
       throw EntityAlreadyExistsException
-          .of("User with name \"%s\" already exists".formatted(request.getName()));
+          .of("User with name \"%s\" already exists".formatted(request.name()));
     }
-    // @formatter:off
-    final User user = InMemoryUser.builder()
-        .name(request.getName())
-        .email(request.getEmail())
-        .build();
-    return create(user);
-  // @formatter:on
-  }
-
-  public User create(User user) {
-    final InMemoryUser created = InMemoryUser.from(user);
+    final InMemoryUser created = new InMemoryUser(request);
     USERS.add(created);
     return created;
   }
 
   @Override
-  public User findByName(String name) {
+  public InMemoryUser findByName(String name) {
     // @formatter:off
     return USERS.stream()
-        .filter(user -> user.getName().equals(name))
+        .filter(user -> user.name().equals(name))
         .findFirst()
         .orElseThrow(() -> new NoSuchElementException("User not found"));
     // @formatter:on
   }
 
   @Override
-  public void delete(User user) {
-    USERS.remove(InMemoryUser.from(user));
+  public void deleteByName(String name) {
+    USERS.stream().filter(user -> user.name().equals(name)).toList().forEach(USERS::remove);
   }
 
   @Override
-  public void deleteByName(String name) {
-    USERS.stream().filter(user -> user.getName().equals(name)).toList().forEach(USERS::remove);
+  public InMemoryUser update(String name, User user) {
+    InMemoryUser oldUser = findByName(name);
+    InMemoryUser newUser = new InMemoryUser(user, oldUser.createdAt());
+    USERS.remove(oldUser);
+    USERS.add(newUser);
+    return newUser;
   }
 
   @Override

@@ -80,7 +80,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
         },
         requestBodies = {
           @RequestBody(
-              name = OpenApiDefinition.REQUEST_CREATE_USER,
+              name = OpenApiDefinition.REQUEST_USER_CREATE,
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON,
                   schema = @Schema(ref = OpenApiDefinition.SCHEMA_USER_CREATE),
@@ -178,7 +178,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 // @formatter:on
 public class OpenApiDefinition extends Application {
   public static final String PARAM_PATH_NAME = "name";
-  public static final String REQUEST_CREATE_USER = "Create User Request";
+  public static final String REQUEST_USER_CREATE = "Create User";
   public static final String RESPONSE_BAD_REQUEST = "Bad Request";
   public static final String RESPONSE_INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String RESPONSE_NOT_FOUND = "Not Found";
@@ -187,5 +187,5 @@ public class OpenApiDefinition extends Application {
   public static final String SCHEMA_ERROR = "Error";
   public static final String SCHEMA_USER_CREATE = "Create User";
   public static final String SCHEMA_USER = "User";
-  public static final String SCHEMA_USERS = "Users";
+  public static final String SCHEMA_USERS = "User List";
 }
