@@ -52,7 +52,7 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getAllUsers() {
     // @formatter:off
-    return Uni.createFrom().item(userDao.findAll())
+    return Uni.createFrom().item(userDao::findAll)
         .onItem().transform(UserEndpoint::toOkResponse);
     // @formatter:on
   }
@@ -75,8 +75,7 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> deleteAllUsers() {
     // @formatter:off
-    return Uni.createFrom().voidItem()
-        .replaceWith(userDao.findAll())
+    return Uni.createFrom().item(userDao::findAll)
         .onItem().invoke(ignored -> userDao.deleteAll())
         .onItem().transform(UserEndpoint::toOkResponse);
     // @formatter:on
