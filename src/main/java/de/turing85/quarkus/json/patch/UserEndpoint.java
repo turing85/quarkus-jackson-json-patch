@@ -3,6 +3,7 @@ package de.turing85.quarkus.json.patch;
 import java.net.URI;
 import java.util.List;
 
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -23,6 +24,7 @@ import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
 import de.turing85.quarkus.json.patch.openapi.OpenApiDefinition;
 import de.turing85.quarkus.json.patch.spi.User;
 import de.turing85.quarkus.json.patch.spi.UserDao;
+import de.turing85.quarkus.json.patch.validation.IsJsonPatch;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -110,7 +112,8 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> patchUserByName(
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name,
-      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) JsonNode patch) {
+      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) @Valid
+      @IsJsonPatch JsonNode patch) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> userDao.findByName(name))

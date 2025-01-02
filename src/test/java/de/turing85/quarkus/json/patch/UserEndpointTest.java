@@ -24,12 +24,12 @@ import static org.hamcrest.CoreMatchers.nullValue;
 @DisplayName("User Endpoint")
 @TestHTTPEndpoint(UserEndpoint.class)
 class UserEndpointTest {
+  private static final InMemoryUser ALICE =
+      InMemoryUser.builder().name("alice").email("alice@gmail.com").build();
+
   @TestHTTPEndpoint(UserEndpoint.class)
   @TestHTTPResource
   URI uri;
-
-  private static final InMemoryUser ALICE =
-      InMemoryUser.builder().name("alice").email("alice@gmail.com").build();
 
   @BeforeEach
   void setup() {
@@ -392,6 +392,29 @@ class UserEndpointTest {
                 UriBuilder.fromUri(uri).path(ALICE.getName()).build().toASCIIString())
             .body("name", is(ALICE.getName()))
             .body("email", is(ALICE.getEmail()));
+    // @formatter:on
+  }
+
+  @Test
+  @DisplayName("Broken Patch → ❌")
+  void whenPatchIsBroken_thenGetBadRequest() {
+    // @formatter:off
+    RestAssured
+        .given()
+            .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
+            .body("""
+                    [
+                      {
+                        "op": "broken"
+                      }
+                    ]""")
+
+        .when().patch("does-not-matter")
+
+        .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     // @formatter:on
   }
 }
