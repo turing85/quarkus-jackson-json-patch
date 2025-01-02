@@ -9,9 +9,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
 import de.turing85.quarkus.json.patch.spi.User;
-import de.turing85.quarkus.json.patch.exception.EntityAlreadyExistsException;
 import de.turing85.quarkus.json.patch.spi.UserDao;
-import io.quarkus.logging.Log;
+import de.turing85.quarkus.json.patch.spi.exception.EntityAlreadyExistsException;
 
 @ApplicationScoped
 public class InMemoryUserDao implements UserDao {
@@ -38,9 +37,9 @@ public class InMemoryUserDao implements UserDao {
   }
 
   public User create(User user) {
-    Log.infof("Creating user with name \"%s\"", user.getName());
-    USERS.add(InMemoryUser.from(user));
-    return user;
+    final InMemoryUser created = InMemoryUser.from(user);
+    USERS.add(created);
+    return created;
   }
 
   @Override
@@ -55,7 +54,6 @@ public class InMemoryUserDao implements UserDao {
 
   @Override
   public void delete(User user) {
-    Log.infof("Deleting user with name \"%s\"", user.getName());
     USERS.remove(InMemoryUser.from(user));
   }
 

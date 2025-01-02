@@ -19,9 +19,9 @@ import jakarta.ws.rs.core.UriBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
 import de.turing85.quarkus.json.patch.api.response.UserResponse;
-import de.turing85.quarkus.json.patch.spi.User;
 import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
 import de.turing85.quarkus.json.patch.openapi.OpenApiDefinition;
+import de.turing85.quarkus.json.patch.spi.User;
 import de.turing85.quarkus.json.patch.spi.UserDao;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
@@ -80,7 +80,7 @@ public final class UserEndpoint {
     // @formatter:off
     return Uni
         .createFrom().item(userDao::findAll)
-        .onItem().invoke(ignored -> userDao.deleteAll())
+        .invoke(ignored -> userDao.deleteAll())
         .map(UserEndpoint::toOkResponse);
     // @formatter:on
   }
