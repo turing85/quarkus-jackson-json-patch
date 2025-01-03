@@ -17,6 +17,7 @@
         <dependency-check-maven.version>11.1.1</dependency-check-maven.version>
         <formatter-maven-plugin.version>2.24.1</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <source-plugin.version>3.3.1</source-plugin.version>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
 
@@ -47,6 +48,8 @@
 
         <impsort-maven-plugin.goal>sort</impsort-maven-plugin.goal>
         <impsort-maven-plugin.skip>false</impsort-maven-plugin.skip>
+
+        <jacoco-plugin.skip>false</jacoco-plugin.skip>
 
         <maven.compiler.parameters>true</maven.compiler.parameters>
         <maven.compiler.proc>full</maven.compiler.proc>
@@ -99,6 +102,7 @@
 
     <build>
         <plugins>
+            <!-- phase: validate -->
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
@@ -138,6 +142,8 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- phase: compile -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -161,6 +167,22 @@
                 </executions>
                 <extensions>true</extensions>
             </plugin>
+
+            <!-- phase: test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-plugin.version}</version>
+                <configuration>
+                    <skip>${surefire-plugin.skip}</skip>
+                    <systemPropertyVariables>
+                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        <maven.home>${maven.home}</maven.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <!-- phase: package -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -228,18 +250,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${surefire-plugin.version}</version>
-                <configuration>
-                    <skip>${surefire-plugin.skip}</skip>
-                    <systemPropertyVariables>
-                        <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                        <maven.home>${maven.home}</maven.home>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
+
+            <!-- phase: verify -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -292,6 +304,46 @@
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- phase: post-integration-test -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <dataFile>${project.build.directory}/jacoco-quarkus.exec</dataFile>
+                    <excludes>
+                        <exclude>de/turing85/quarkus/json/patch/openapi/**/*</exclude>
+                    </excludes>
+                    <rules>
+                        <rule>
+                            <element>BUNDLE</element>
+                            <limits>
+                                <limit>
+                                    <counter>LINE</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.8</minimum>
+                                </limit>
+                                <limit>
+                                    <counter>BRANCH</counter>
+                                    <value>COVEREDRATIO</value>
+                                    <minimum>0.8</minimum>
+                                </limit>
+                            </limits>
+                        </rule>
+                    </rules>
+                    <skip>${jacoco-plugin.skip}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>post-integration-test</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -349,6 +401,11 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-jacoco</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -412,6 +469,7 @@
                 <attach-fast-jar.skip>true</attach-fast-jar.skip>
                 <formatter-maven-plugin.skip>true</formatter-maven-plugin.skip>
                 <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
+                <jacoco-plugin.skip>true</jacoco-plugin.skip>
                 <quarkus.container-image.additional-tags>native</quarkus.container-image.additional-tags>
                 <quarkus.docker.dockerfile-native-path>src/main/container/Containerfile.native-distroless-compressed</quarkus.docker.dockerfile-native-path>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
@@ -496,6 +554,17 @@
             </activation>
             <properties>
                 <failsafe-plugin.skip>true</failsafe-plugin.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-jacoco</id>
+            <activation>
+                <property>
+                    <name>skip-jacoco</name>
+                </property>
+            </activation>
+            <properties>
+                <jacoco-plugin.skip>true</jacoco-plugin.skip>
             </properties>
         </profile>
         <profile>

@@ -78,6 +78,34 @@ class UsersEndpointTest {
   }
 
   @Test
+  @DisplayName("Delete existing → 400 BAD REQUEST ✅")
+  void whenCreateExisting_thenBadRequest() {
+    // given
+    // @formatter:off
+    RestAssured
+        .given()
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(ALICE)
+    // when
+        .when().post()
+
+    // then
+        .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+    RestAssured
+        .when().get(ALICE.name())
+        .then()
+            .statusCode(Response.Status.OK.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body("name", is(ALICE.name()))
+            .body("email", is(ALICE.email()));
+    // @formatter:on
+  }
+
+  @Test
   @DisplayName("Delete existing → 200 OK ✅")
   void whenDelete_thenAllGood() {
     // when
