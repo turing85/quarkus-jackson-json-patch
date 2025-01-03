@@ -18,15 +18,15 @@ import org.jboss.resteasy.reactive.server.UnwrapException;
 @Provider
 @Priority(Priorities.USER)
 @UnwrapException(RuntimeException.class)
-public class ConstraintViolationExceptionMapper
+public final class ConstraintViolationExceptionMapper
     implements ExceptionMapper<ConstraintViolationException> {
   public static final String BODY_FORMAT = "Parameter \"%s\": %s";
   public static final String UNNAMED_PROPERTY = "(unnamed)";
 
   @Override
-  public Response toResponse(ConstraintViolationException exception) {
+  public Response toResponse(final ConstraintViolationException exception) {
     // @formatter:off
-    String message = exception.getConstraintViolations().stream()
+    final String message = exception.getConstraintViolations().stream()
         .map(ConstraintViolationExceptionMapper::constructViolationDescription)
         .collect(Collectors.joining(System.lineSeparator()));
     return Response
@@ -36,12 +36,12 @@ public class ConstraintViolationExceptionMapper
     // @formatter:on
   }
 
-  private static String constructViolationDescription(ConstraintViolation<?> violation) {
+  private static String constructViolationDescription(final ConstraintViolation<?> violation) {
     return BODY_FORMAT.formatted(getPropertyNameFromPath(violation).orElse(UNNAMED_PROPERTY),
         violation.getMessage());
   }
 
-  private static Optional<String> getPropertyNameFromPath(ConstraintViolation<?> violation) {
+  private static Optional<String> getPropertyNameFromPath(final ConstraintViolation<?> violation) {
     String propertyName = null;
     for (Path.Node node : violation.getPropertyPath()) {
       propertyName = node.getName();

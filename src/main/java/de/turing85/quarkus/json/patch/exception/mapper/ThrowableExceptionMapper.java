@@ -12,7 +12,7 @@ import org.jboss.logging.Logger;
 @Provider
 @Priority(Priorities.USER + 100)
 public final class ThrowableExceptionMapper extends BaseExceptionMapper<NoSuchElementException> {
-  ThrowableExceptionMapper(Logger logger) {
+  ThrowableExceptionMapper(final Logger logger) {
     super(logger);
   }
 

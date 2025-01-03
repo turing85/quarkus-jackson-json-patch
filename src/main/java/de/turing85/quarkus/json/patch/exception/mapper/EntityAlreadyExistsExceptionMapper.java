@@ -14,8 +14,7 @@ import org.jboss.resteasy.reactive.server.UnwrapException;
 @UnwrapException(RuntimeException.class)
 public final class EntityAlreadyExistsExceptionMapper
     extends BaseExceptionMapper<EntityAlreadyExistsException> {
-
-  EntityAlreadyExistsExceptionMapper(Logger logger) {
+  EntityAlreadyExistsExceptionMapper(final Logger logger) {
     super(logger);
   }
 

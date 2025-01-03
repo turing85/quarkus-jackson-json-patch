@@ -36,13 +36,13 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path(UserEndpoint.PATH)
+@Path(UsersEndpoint.PATH)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Users")
 @RequiredArgsConstructor
 @Getter(AccessLevel.PRIVATE)
-public final class UserEndpoint {
+public final class UsersEndpoint {
   static final String PATH = "users";
   private static final URI PATH_URI = URI.create(PATH);
 
@@ -57,7 +57,7 @@ public final class UserEndpoint {
     // @formatter:off
     return Uni
         .createFrom().item(getUserDao()::findAll)
-        .map(UserEndpoint::toOkResponse);
+        .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -66,12 +66,12 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_CREATED)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> createUser(
-      @RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) CreateUserRequest request) {
+      @RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) final CreateUserRequest request) {
     // @formatter:off
     return Uni
         .createFrom().item(request)
         .map(getUserDao()::create)
-        .map(UserEndpoint::toCreatedResponse);
+        .map(UsersEndpoint::toCreatedResponse);
     // @formatter:on
   }
 
@@ -83,7 +83,7 @@ public final class UserEndpoint {
     return Uni
         .createFrom().item(getUserDao()::findAll)
         .invoke(ignored -> getUserDao().deleteAll())
-        .map(UserEndpoint::toOkResponse);
+        .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -94,11 +94,11 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getUserByName(
-      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name) {
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> getUserDao().findByName(name))
-        .map(UserEndpoint::toOkResponse);
+        .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
 
@@ -107,20 +107,23 @@ public final class UserEndpoint {
   @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_NO_CONTENT)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_BAD_REQUEST)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> patchUserByName(
-      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name,
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name,
       @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) @Valid
-      @IsJsonPatch JsonNode patch) {
+      @IsJsonPatch final JsonNode patch) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> getUserDao().findByName(name))
         .map(Unchecked.function(user ->
             Tuple2.of(user, getPatcher().patch(CreateUserRequest.from(user), patch))))
         .map(tuple -> getUserDao().update(tuple.getItem1().name(), tuple.getItem2()))
-        .map(UserEndpoint::toOkResponse);
+        .map(maybeUser -> maybeUser
+            .map(UsersEndpoint::toOkResponse)
+            .orElseGet(() -> Response.noContent().build()));
     // @formatter:on
   }
 
@@ -131,16 +134,16 @@ public final class UserEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> deleteUserByName(
-      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") String name) {
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> getUserDao().findByName(name))
         .invoke(user -> getUserDao().deleteByName(user.name()))
-        .map(UserEndpoint::toOkResponse);
+        .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
 
-  private static Response toOkResponse(List<User> users) {
+  private static Response toOkResponse(final List<User> users) {
     // @formatter:off
     return Response
         .status(Response.Status.OK.getStatusCode())
@@ -149,7 +152,7 @@ public final class UserEndpoint {
     // @formatter:on
   }
 
-  private static Response toOkResponse(User user) {
+  private static Response toOkResponse(final User user) {
     // @formatter:off
     return Response
             .status(Response.Status.OK.getStatusCode())
@@ -158,7 +161,7 @@ public final class UserEndpoint {
     // @formatter:on
   }
 
-  private static Response toCreatedResponse(User user) {
+  private static Response toCreatedResponse(final User user) {
     return Response.created(UriBuilder.fromUri(PATH_URI).path(user.name()).build())
         .entity(UserResponse.from(user)).build();
   }

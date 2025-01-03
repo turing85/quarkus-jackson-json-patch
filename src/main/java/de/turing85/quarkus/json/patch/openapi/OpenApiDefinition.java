@@ -146,6 +146,10 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                           }
                         ]""")),
             @APIResponse(
+                name = OpenApiDefinition.RESPONSE_NO_CONTENT,
+                description = "No content",
+                responseCode = "204"),
+            @APIResponse(
                 name = OpenApiDefinition.RESPONSE_BAD_REQUEST,
                 description = "The request could not be processed",
                 responseCode = "400",
@@ -194,12 +198,13 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                           "message": "Internal Server Error"
                         }"""))}))
 // @formatter:on
-public class OpenApiDefinition extends Application {
+public final class OpenApiDefinition extends Application {
   public static final String PARAM_PATH_NAME = "name";
   public static final String REQUEST_USER_CREATE = "Create User";
-  public static final String RESPONSE_BAD_REQUEST = "Bad Request";
-  public static final String RESPONSE_INTERNAL_SERVER_ERROR = "Internal Server Error";
-  public static final String RESPONSE_NOT_FOUND = "Not Found";
+  public static final String RESPONSE_NO_CONTENT = "NoContent";
+  public static final String RESPONSE_BAD_REQUEST = "BadRequest";
+  public static final String RESPONSE_INTERNAL_SERVER_ERROR = "InternalServerError";
+  public static final String RESPONSE_NOT_FOUND = "NotFound";
   public static final String RESPONSE_USER_CREATED = "UserCreated";
   public static final String RESPONSE_USER_OK = "UserOk";
   public static final String RESPONSE_USERS_OK = "UsersOk";

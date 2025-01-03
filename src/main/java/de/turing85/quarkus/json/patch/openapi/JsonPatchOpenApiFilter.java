@@ -14,21 +14,21 @@ import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 
 @OpenApiFilter(OpenApiFilter.RunStage.BUILD)
-public class JsonPatchOpenApiFilter implements OASFilter {
+public final class JsonPatchOpenApiFilter implements OASFilter {
   public static final String REQUEST_BODY_JSON_PATCH = "JsonPatch";
   public static final String SCHEMA_JSON_PATCH = "Json Patch";
 
   @Override
-  public void filterOpenAPI(OpenAPI openApi) {
+  public void filterOpenAPI(final OpenAPI openApi) {
     if (openApi.getComponents() == null) {
       openApi.setComponents(new Components());
     }
-    Schema jsonPatchSchemaRef = registerJsonPatchSchema(openApi);
+    final Schema jsonPatchSchemaRef = registerJsonPatchSchema(openApi);
     registerJsonPatchRequestBody(openApi, jsonPatchSchemaRef);
   }
 
-  private static Schema registerJsonPatchSchema(OpenAPI openAPI) {
-    Schema jsonPatchSchema = new Schema();
+  private static Schema registerJsonPatchSchema(final OpenAPI openAPI) {
+    final Schema jsonPatchSchema = new Schema();
     jsonPatchSchema
         .setType(List.of(org.eclipse.microprofile.openapi.models.media.Schema.SchemaType.ARRAY));
     jsonPatchSchema.setName(SCHEMA_JSON_PATCH);
@@ -36,35 +36,36 @@ public class JsonPatchOpenApiFilter implements OASFilter {
     jsonPatchSchema.setRef("https://json.schemastore.org/json-patch");
     openAPI.getComponents().addSchema(SCHEMA_JSON_PATCH, jsonPatchSchema);
 
-    Schema jsonPatchSchemaRef = new Schema();
+    final Schema jsonPatchSchemaRef = new Schema();
     jsonPatchSchemaRef.setRef(SCHEMA_JSON_PATCH);
     return jsonPatchSchemaRef;
   }
 
-  private static void registerJsonPatchRequestBody(OpenAPI openAPI, Schema jsonPatchSchemaRef) {
-    RequestBody jsonPatchRequestBody = new RequestBody();
+  private static void registerJsonPatchRequestBody(final OpenAPI openAPI,
+      final Schema jsonPatchSchemaRef) {
+    final RequestBody jsonPatchRequestBody = new RequestBody();
     jsonPatchRequestBody.setName(REQUEST_BODY_JSON_PATCH);
     jsonPatchRequestBody.setContent(constructJsonPatchContent(jsonPatchSchemaRef));
     openAPI.getComponents().addRequestBody(REQUEST_BODY_JSON_PATCH, jsonPatchRequestBody);
   }
 
-  private static Content constructJsonPatchContent(Schema jsonPatchSchemaRef) {
-    Content jsonPatchContent = new Content();
+  private static Content constructJsonPatchContent(final Schema jsonPatchSchemaRef) {
+    final Content jsonPatchContent = new Content();
     jsonPatchContent.addMediaType(MediaType.APPLICATION_JSON_PATCH_JSON,
         constructJsonPatchMediaType(jsonPatchSchemaRef));
     return jsonPatchContent;
   }
 
   private static io.smallrye.openapi.internal.models.media.MediaType constructJsonPatchMediaType(
-      Schema jsonPatchSchemaRef) {
-    io.smallrye.openapi.internal.models.media.MediaType jsonPatchMediaType =
+      final Schema jsonPatchSchemaRef) {
+    final io.smallrye.openapi.internal.models.media.MediaType jsonPatchMediaType =
         new io.smallrye.openapi.internal.models.media.MediaType();
     jsonPatchMediaType.setSchema(jsonPatchSchemaRef);
     // @formatter:off
     jsonPatchMediaType
         .addExample(
             "replace",
-            constructEXample("""
+            constructExample("""
                 [
                   {
                     "op": "replace",
@@ -74,7 +75,7 @@ public class JsonPatchOpenApiFilter implements OASFilter {
                 ]"""))
         .addExample(
             "remove",
-            constructEXample("""
+            constructExample("""
                 [
                   {
                     "op": "remove",
@@ -83,7 +84,7 @@ public class JsonPatchOpenApiFilter implements OASFilter {
                 ]"""))
         .addExample(
             "copy",
-            constructEXample("""
+            constructExample("""
                 [
                   {
                     "op": "copy",
@@ -93,7 +94,7 @@ public class JsonPatchOpenApiFilter implements OASFilter {
                 ]"""))
         .addExample(
             "move",
-            constructEXample("""
+            constructExample("""
                 [
                   {
                     "op": "move",
@@ -103,7 +104,7 @@ public class JsonPatchOpenApiFilter implements OASFilter {
                 ]"""))
         .addExample(
             "test",
-            constructEXample("""
+            constructExample("""
                 [
                   {
                     "op": "test",
@@ -113,7 +114,7 @@ public class JsonPatchOpenApiFilter implements OASFilter {
                 ]"""))
         .addExample(
             "test and copy",
-            constructEXample("""
+            constructExample("""
                 [
                   {
                     "op": "test",
@@ -130,8 +131,8 @@ public class JsonPatchOpenApiFilter implements OASFilter {
     return jsonPatchMediaType;
   }
 
-  private static Example constructEXample(String value) {
-    Example example = new Example();
+  private static Example constructExample(final String value) {
+    final Example example = new Example();
     example.setValue(value);
     return example;
   }

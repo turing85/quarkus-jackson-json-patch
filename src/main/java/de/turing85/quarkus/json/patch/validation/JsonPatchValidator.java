@@ -9,13 +9,13 @@ import com.flipkart.zjsonpatch.InvalidJsonPatchException;
 import com.flipkart.zjsonpatch.JsonPatch;
 
 @Singleton
-class JsonPatchValidator implements ConstraintValidator<IsJsonPatch, JsonNode> {
+final class JsonPatchValidator implements ConstraintValidator<IsJsonPatch, JsonNode> {
   @Override
-  public boolean isValid(JsonNode value, ConstraintValidatorContext context) {
+  public boolean isValid(final JsonNode value, final ConstraintValidatorContext context) {
     try {
       JsonPatch.validate(value);
       return true;
-    } catch (InvalidJsonPatchException e) {
+    } catch (final InvalidJsonPatchException e) {
       context.buildConstraintViolationWithTemplate(e.getMessage()).addConstraintViolation()
           .disableDefaultConstraintViolation();
       return false;

@@ -1,19 +1,20 @@
 package de.turing85.quarkus.json.patch.spi;
 
 import java.util.List;
+import java.util.Optional;
 
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
 
 public interface UserDao {
   List<User> findAll();
 
-  User create(CreateUserRequest request);
+  User create(final CreateUserRequest request);
 
-  User findByName(String name);
+  User findByName(final String name);
 
-  void deleteByName(String name);
+  void deleteByName(final String name);
 
   void deleteAll();
 
-  User update(String name, User user);
+  Optional<User> update(final String name, final User user);
 }

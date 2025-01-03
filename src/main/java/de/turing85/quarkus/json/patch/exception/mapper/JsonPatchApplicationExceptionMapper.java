@@ -14,8 +14,7 @@ import org.jboss.resteasy.reactive.server.UnwrapException;
 @UnwrapException(RuntimeException.class)
 public final class JsonPatchApplicationExceptionMapper
     extends BaseExceptionMapper<JsonPatchApplicationException> {
-
-  JsonPatchApplicationExceptionMapper(Logger logger) {
+  JsonPatchApplicationExceptionMapper(final Logger logger) {
     super(logger);
   }
 

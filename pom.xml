@@ -374,6 +374,19 @@
             </properties>
         </profile>
         <profile>
+            <id>owasp</id>
+            <activation>
+                <property>
+                    <name>owasp</name>
+                </property>
+            </activation>
+            <properties>
+                <dependency-check-maven.skip>false</dependency-check-maven.skip>
+            </properties>
+        </profile>
+
+        <!-- ci-profiles -->
+        <profile>
             <id>ci</id>
             <activation>
                 <property>
@@ -439,6 +452,8 @@
                 <impsort-maven-plugin.skip>true</impsort-maven-plugin.skip>
             </properties>
         </profile>
+
+        <!-- native profiles -->
         <profile>
             <id>native</id>
             <activation>
@@ -470,17 +485,8 @@
                 <quarkus.package.jar.add-runner-suffix>true</quarkus.package.jar.add-runner-suffix>
             </properties>
         </profile>
-        <profile>
-            <id>owasp</id>
-            <activation>
-                <property>
-                    <name>owasp</name>
-                </property>
-            </activation>
-            <properties>
-                <dependency-check-maven.skip>false</dependency-check-maven.skip>
-            </properties>
-        </profile>
+
+        <!-- skip profiles -->
         <profile>
             <id>skip-failsafe</id>
             <activation>

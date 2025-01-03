@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -22,8 +24,8 @@ public class InMemoryUserDao implements UserDao {
   }
 
   @Override
-  public InMemoryUser create(CreateUserRequest request) {
-    if (USERS.stream().anyMatch(u -> u.name().equals(request.name()))) {
+  public InMemoryUser create(final CreateUserRequest request) {
+    if (USERS.stream().anyMatch(user -> user.name().equals(request.name()))) {
       throw EntityAlreadyExistsException
           .of("User with name \"%s\" already exists".formatted(request.name()));
     }
@@ -33,7 +35,7 @@ public class InMemoryUserDao implements UserDao {
   }
 
   @Override
-  public InMemoryUser findByName(String name) {
+  public InMemoryUser findByName(final String name) {
     // @formatter:off
     return USERS.stream()
         .filter(user -> user.name().equals(name))
@@ -43,17 +45,25 @@ public class InMemoryUserDao implements UserDao {
   }
 
   @Override
-  public void deleteByName(String name) {
-    USERS.stream().filter(user -> user.name().equals(name)).toList().forEach(USERS::remove);
+  public void deleteByName(final String name) {
+    // @formatter:off
+    USERS.stream()
+        .filter(user -> user.name().equals(name))
+        .toList()
+        .forEach(USERS::remove);
+    // @formatter:on
   }
 
   @Override
-  public InMemoryUser update(String name, User user) {
-    InMemoryUser oldUser = findByName(name);
-    InMemoryUser newUser = new InMemoryUser(user, oldUser.createdAt());
-    USERS.remove(oldUser);
-    USERS.add(newUser);
-    return newUser;
+  public Optional<User> update(final String name, final User user) {
+    final InMemoryUser oldUser = findByName(name);
+    final InMemoryUser newUser = oldUser.updateWith(user);
+    if (!Objects.equals(oldUser, newUser)) {
+      USERS.remove(oldUser);
+      USERS.add(newUser);
+      return Optional.of(newUser);
+    }
+    return Optional.empty();
   }
 
   @Override

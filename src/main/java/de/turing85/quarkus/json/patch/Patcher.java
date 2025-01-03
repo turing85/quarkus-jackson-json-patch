@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class Patcher {
   private final ObjectMapper objectMapper;
 
-  public <T> T patch(T t, JsonNode patch) throws JsonProcessingException {
+  public <T> T patch(final T t, final JsonNode patch) throws JsonProcessingException {
     final JsonNode tAsNode = getObjectMapper().convertValue(t, JsonNode.class);
     Log.debugf("Original (type: %s): %s", t.getClass().getCanonicalName(), tAsNode);
     if (Log.isDebugEnabled()) {

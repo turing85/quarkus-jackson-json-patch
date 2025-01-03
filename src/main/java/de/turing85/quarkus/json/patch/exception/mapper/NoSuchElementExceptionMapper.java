@@ -15,8 +15,7 @@ import org.jboss.resteasy.reactive.server.UnwrapException;
 @UnwrapException(RuntimeException.class)
 public final class NoSuchElementExceptionMapper
     extends BaseExceptionMapper<NoSuchElementException> {
-
-  NoSuchElementExceptionMapper(Logger logger) {
+  NoSuchElementExceptionMapper(final Logger logger) {
     super(logger);
   }
 

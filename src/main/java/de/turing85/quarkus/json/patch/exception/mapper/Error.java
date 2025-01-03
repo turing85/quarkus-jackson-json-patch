@@ -11,7 +11,7 @@ import lombok.Value;
 public class Error {
   String message;
 
-  public static Error of(String message) {
+  public static Error of(final String message) {
     return new Error(message);
   }
 }

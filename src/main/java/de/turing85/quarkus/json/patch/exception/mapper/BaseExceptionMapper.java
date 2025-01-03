@@ -22,7 +22,7 @@ public abstract class BaseExceptionMapper<T extends Throwable> implements Except
   }
 
   @Override
-  public final Response toResponse(T throwable) {
+  public final Response toResponse(final T throwable) {
     logger().logf(level(), throwable, "Caught exception, responding with status %s", status());
     // @formatter:off
     return Response

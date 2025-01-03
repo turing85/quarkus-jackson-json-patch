@@ -5,16 +5,15 @@ import java.time.Instant;
 import de.turing85.quarkus.json.patch.spi.User;
 
 public record InMemoryUser(String name, String email, Instant createdAt) implements User {
-
-  InMemoryUser(User user) {
+  InMemoryUser(final User user) {
     this(user.name(), user.email());
   }
 
-  InMemoryUser(User user, Instant createdAt) {
-    this(user.name(), user.email(), createdAt);
+  public InMemoryUser(final String name, final String email) {
+    this(name, email, Instant.now());
   }
 
-  public InMemoryUser(String name, String email) {
-    this(name, email, Instant.now());
+  public InMemoryUser updateWith(final User user) {
+    return new InMemoryUser(user.name(), user.email(), createdAt());
   }
 }
