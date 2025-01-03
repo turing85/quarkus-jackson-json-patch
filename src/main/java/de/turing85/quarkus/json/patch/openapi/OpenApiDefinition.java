@@ -92,7 +92,25 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
         },
         responses = {
             @APIResponse(
-                name = OpenApiDefinition.RESPONSE_USER,
+                name = OpenApiDefinition.RESPONSE_USER_OK,
+                responseCode = "200",
+                description = "The user",
+                headers = {
+                    @Header(ref = HttpHeaders.CONTENT_ENCODING),
+                    @Header(ref = HttpHeaders.CONTENT_LENGTH),
+                    @Header(ref = HttpHeaders.CONTENT_TYPE),
+                },
+                content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_USER),
+                    example = """
+                        {
+                          "name": "alice",
+                          "email": "alice@email.com"
+                        }""")),
+            @APIResponse(
+                name = OpenApiDefinition.RESPONSE_USER_CREATED,
+                responseCode = "204",
                 description = "The user",
                 headers = {
                     @Header(ref = HttpHeaders.CONTENT_ENCODING),
@@ -109,13 +127,13 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                           "email": "alice@email.com"
                         }""")),
             @APIResponse(
-                name = OpenApiDefinition.RESPONSE_USERS,
+                name = OpenApiDefinition.RESPONSE_USERS_OK,
                 description = "The users",
+                responseCode = "200",
                 headers = {
                     @Header(ref = HttpHeaders.CONTENT_ENCODING),
                     @Header(ref = HttpHeaders.CONTENT_TYPE),
                     @Header(ref = HttpHeaders.CONTENT_LENGTH),
-                    @Header(ref = HttpHeaders.LOCATION),
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
@@ -182,10 +200,11 @@ public class OpenApiDefinition extends Application {
   public static final String RESPONSE_BAD_REQUEST = "Bad Request";
   public static final String RESPONSE_INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String RESPONSE_NOT_FOUND = "Not Found";
-  public static final String RESPONSE_USER = "User";
-  public static final String RESPONSE_USERS = "Users";
+  public static final String RESPONSE_USER_CREATED = "UserCreated";
+  public static final String RESPONSE_USER_OK = "UserOk";
+  public static final String RESPONSE_USERS_OK = "UsersOk";
   public static final String SCHEMA_ERROR = "Error";
-  public static final String SCHEMA_USER_CREATE = "Create User";
   public static final String SCHEMA_USER = "User";
   public static final String SCHEMA_USERS = "User List";
+  public static final String SCHEMA_USER_CREATE = "Create User";
 }

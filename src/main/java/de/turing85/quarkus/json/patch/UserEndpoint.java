@@ -51,7 +51,7 @@ public final class UserEndpoint {
 
   @GET
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
-  @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getAllUsers() {
     // @formatter:off
@@ -63,7 +63,7 @@ public final class UserEndpoint {
 
   @POST
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
-  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "204")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_CREATED)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> createUser(
       @RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) CreateUserRequest request) {
@@ -76,7 +76,7 @@ public final class UserEndpoint {
   }
 
   @DELETE
-  @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS)
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USERS_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> deleteAllUsers() {
     // @formatter:off
@@ -90,7 +90,7 @@ public final class UserEndpoint {
   @GET
   @Path("{name}")
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
-  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> getUserByName(
@@ -106,7 +106,7 @@ public final class UserEndpoint {
   @Path("{name}")
   @Consumes(MediaType.APPLICATION_JSON_PATCH_JSON)
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
-  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_BAD_REQUEST)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
@@ -127,7 +127,7 @@ public final class UserEndpoint {
   @DELETE
   @Path("{name}")
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
-  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER, responseCode = "200")
+  @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> deleteUserByName(
@@ -145,26 +145,22 @@ public final class UserEndpoint {
     return Response
         .status(Response.Status.OK.getStatusCode())
         .entity(users.stream().map(UserResponse::from).toList())
-        .location(PATH_URI)
         .build();
     // @formatter:on
   }
 
   private static Response toOkResponse(User user) {
-    return toResponse(user, Response.Status.OK.getStatusCode());
-  }
-
-  private static Response toCreatedResponse(User user) {
-    return toResponse(user, Response.Status.CREATED.getStatusCode());
-  }
-
-  private static Response toResponse(User user, int status) {
     // @formatter:off
     return Response
-            .status(status)
+            .status(Response.Status.OK.getStatusCode())
             .entity(UserResponse.from(user))
-            .location(UriBuilder.fromUri(PATH_URI).path(user.name()).build())
             .build();
     // @formatter:on
   }
+
+  private static Response toCreatedResponse(User user) {
+    return Response.created(UriBuilder.fromUri(PATH_URI).path(user.name()).build())
+        .entity(UserResponse.from(user)).build();
+  }
+
 }

@@ -49,8 +49,7 @@ class UserEndpointTest {
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(HttpHeaders.LOCATION, uri.toASCIIString());
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     // @formatter:on
   }
 
@@ -73,9 +72,6 @@ class UserEndpointTest {
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body("name", is(ALICE.name()))
             .body("email", is(ALICE.email()));
@@ -93,9 +89,6 @@ class UserEndpointTest {
     // when
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
-            .header(
-                    HttpHeaders.LOCATION,
-                    UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body("name", is(ALICE.name()))
@@ -158,9 +151,6 @@ class UserEndpointTest {
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(newName).build().toASCIIString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body("name", is(newName))
             .body("email", is(newEmail));
@@ -199,9 +189,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .body("name", is(ALICE.name()))
             .body("email", is(nullValue()));
     RestAssured
@@ -210,9 +197,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .body("name", is(ALICE.name()))
             .body("email", is(nullValue()));
     // @formatter:on
@@ -243,9 +227,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
             .body("name", is(ALICE.email()))
             .body("email", is(nullValue()));
     RestAssured
@@ -254,9 +235,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
             .body("name", is(ALICE.email()))
             .body("email", is(nullValue()));
     // @formatter:on
@@ -287,9 +265,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
             .body("name", is(ALICE.email()))
             .body("email", is(ALICE.email()));
     RestAssured
@@ -298,9 +273,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.email()).build().toASCIIString())
             .body("name", is(ALICE.email()))
             .body("email", is(ALICE.email()));
     // @formatter:on
@@ -342,9 +314,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .body("name", is(ALICE.name()))
             .body("email", is(ALICE.email()));
     // @formatter:on
@@ -386,9 +355,6 @@ class UserEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .header(
-                HttpHeaders.LOCATION,
-                UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .body("name", is(ALICE.name()))
             .body("email", is(ALICE.email()));
     // @formatter:on
