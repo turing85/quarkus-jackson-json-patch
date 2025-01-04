@@ -29,7 +29,7 @@ public class InMemoryUserDao implements UserDao {
       throw EntityAlreadyExistsException
           .of("User with name \"%s\" already exists".formatted(request.name()));
     }
-    final InMemoryUser created = new InMemoryUser(request);
+    final InMemoryUser created = InMemoryUser.of(request);
     USERS.add(created);
     return created;
   }

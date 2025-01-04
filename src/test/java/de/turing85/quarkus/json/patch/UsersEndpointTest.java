@@ -1,13 +1,19 @@
 package de.turing85.quarkus.json.patch;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
+import de.turing85.quarkus.json.patch.api.response.UserResponse;
+import de.turing85.quarkus.json.patch.spi.User;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -17,15 +23,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.emptyString;
 
 @QuarkusTest
 @DisplayName("Users Endpoint")
 @TestHTTPEndpoint(UsersEndpoint.class)
 class UsersEndpointTest {
-  private static final CreateUserRequest ALICE = new CreateUserRequest("alice", "alice@gmail.com");
+  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final CreateUserRequest ALICE = CreateUserRequest.of("alice", "alice@gmail.com");
 
   @TestHTTPEndpoint(UsersEndpoint.class)
   @TestHTTPResource
@@ -42,13 +49,16 @@ class UsersEndpointTest {
     RestAssured
         .when().delete()
         .then()
-            .statusCode(Response.Status.OK.getStatusCode());
+            .statusCode(Response.Status.OK.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
     RestAssured
         .when().get()
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body("", is(Collections.emptyList()));
     // @formatter:on
   }
 
@@ -61,20 +71,24 @@ class UsersEndpointTest {
         .when().post()
         .then()
             .statusCode(Response.Status.CREATED.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
             .header(
                 HttpHeaders.LOCATION,
                 UriBuilder.fromUri(uri).path(ALICE.name()).build().toASCIIString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     RestAssured
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     // @formatter:on
+  }
+
+  private static Map<String, Object> toMap(User user) {
+    return MAPPER.convertValue(UserResponse.of(user), new TypeReference<>() {});
   }
 
   @Test
@@ -93,15 +107,15 @@ class UsersEndpointTest {
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
     RestAssured
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     // @formatter:on
   }
 
@@ -118,14 +132,14 @@ class UsersEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     RestAssured
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.NOT_FOUND.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
     // @formatter:on
   }
 
@@ -138,7 +152,8 @@ class UsersEndpointTest {
         .then()
             .statusCode(Response.Status.NOT_FOUND.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
     // @formatter:on
   }
 
@@ -146,9 +161,9 @@ class UsersEndpointTest {
   @DisplayName("Patch Replace → 200 OK ✅")
   void whenPatchReplace_thenAllGood() {
     // given
+    final CreateUserRequest updatedAlice =
+        CreateUserRequest.of("alice wonder", "alice@wonder.land");
     // @formatter:off
-    final String newName = "alice wonder";
-    final String newEmail = "alice@wonder.land";
     RestAssured
         .given()
             .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
@@ -169,7 +184,7 @@ class UsersEndpointTest {
                     "path": "/email",
                     "value": "%s"
                   }
-                ]""".formatted(ALICE.name(), newName, newEmail))
+                ]""".formatted(ALICE.name(), updatedAlice.name(), updatedAlice.email()))
 
     // when
         .when().patch(ALICE.name())
@@ -179,16 +194,14 @@ class UsersEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(newName))
-            .body("email", is(newEmail));
+            .body("", is(toMap(updatedAlice)));
     RestAssured
-        .when().get(newName)
+        .when().get(updatedAlice.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(newName))
-            .body("email", is(newEmail));
+            .body("", is(toMap(updatedAlice)));
     // @formatter:on
   }
 
@@ -237,8 +250,7 @@ class UsersEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     // @formatter:on
   }
 
@@ -246,6 +258,7 @@ class UsersEndpointTest {
   @DisplayName("Patch Delete → 200 OK ✅")
   void whenPatchDelete_thenAllGood() {
     // given
+    final CreateUserRequest updatedAlice = CreateUserRequest.of(ALICE.name(), null);
     // @formatter:off
     RestAssured
         .given()
@@ -266,16 +279,14 @@ class UsersEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(nullValue()));
+            .body("", is(toMap(updatedAlice)));
     RestAssured
-        .when().get(ALICE.name())
+        .when().get(updatedAlice.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(nullValue()));
+            .body("", is(toMap(updatedAlice)));
     // @formatter:on
   }
 
@@ -283,6 +294,7 @@ class UsersEndpointTest {
   @DisplayName("Patch Move → 200 OK ✅")
   void whenPatchMove_thenAllGood() {
     // given
+    final UserResponse updatedAlice = UserResponse.of(ALICE.email(), null);
     // @formatter:off
     RestAssured
         .given()
@@ -304,16 +316,14 @@ class UsersEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.email()))
-            .body("email", is(nullValue()));
+            .body("", is(toMap(updatedAlice)));
     RestAssured
-        .when().get(ALICE.email())
+        .when().get(updatedAlice.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.email()))
-            .body("email", is(nullValue()));
+            .body("", is(toMap(updatedAlice)));
     // @formatter:on
   }
 
@@ -321,6 +331,7 @@ class UsersEndpointTest {
   @DisplayName("Patch Copy → 200 OK ✅")
   void whenPatchCopy_thenAllGood() {
     // given
+    final CreateUserRequest updatedAlice = CreateUserRequest.of(ALICE.email(), ALICE.email());
     // @formatter:off
     RestAssured
         .given()
@@ -342,16 +353,14 @@ class UsersEndpointTest {
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.email()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(updatedAlice)));
     RestAssured
-        .when().get(ALICE.email())
+        .when().get(updatedAlice.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.email()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(updatedAlice)));
     // @formatter:on
   }
 
@@ -384,15 +393,15 @@ class UsersEndpointTest {
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
     RestAssured
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     // @formatter:on
   }
 
@@ -425,15 +434,15 @@ class UsersEndpointTest {
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
     RestAssured
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.OK.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
-            .body("name", is(ALICE.name()))
-            .body("email", is(ALICE.email()));
+            .body("", is(toMap(ALICE)));
     // @formatter:on
   }
 
@@ -456,7 +465,8 @@ class UsersEndpointTest {
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
-            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()));
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
     // @formatter:on
   }
 }

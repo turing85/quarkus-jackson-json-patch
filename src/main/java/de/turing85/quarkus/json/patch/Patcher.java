@@ -18,14 +18,14 @@ public class Patcher {
   private final ObjectMapper objectMapper;
 
   public <T> T patch(final T t, final JsonNode patch) throws JsonProcessingException {
-    final JsonNode tAsNode = getObjectMapper().convertValue(t, JsonNode.class);
+    final JsonNode tAsNode = objectMapper().convertValue(t, JsonNode.class);
     Log.debugf("Original (type: %s): %s", t.getClass().getCanonicalName(), tAsNode);
     if (Log.isDebugEnabled()) {
-      Log.debugf("Patch: %s", getObjectMapper().writeValueAsString(patch));
+      Log.debugf("Patch: %s", objectMapper().writeValueAsString(patch));
     }
     final JsonNode patchAsNode = JsonPatch.apply(patch, tAsNode);
     @SuppressWarnings("unchecked")
-    final T patched = (T) getObjectMapper().treeToValue(patchAsNode, t.getClass());
+    final T patched = (T) objectMapper().treeToValue(patchAsNode, t.getClass());
     Log.debugf("Patched (type: %s): %s", patched.getClass().getCanonicalName(), patchAsNode);
     return patched;
   }

@@ -56,7 +56,7 @@ public final class UsersEndpoint {
   public Uni<Response> getAllUsers() {
     // @formatter:off
     return Uni
-        .createFrom().item(getUserDao()::findAll)
+        .createFrom().item(userDao()::findAll)
         .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
@@ -70,7 +70,7 @@ public final class UsersEndpoint {
     // @formatter:off
     return Uni
         .createFrom().item(request)
-        .map(getUserDao()::create)
+        .map(userDao()::create)
         .map(UsersEndpoint::toCreatedResponse);
     // @formatter:on
   }
@@ -81,8 +81,8 @@ public final class UsersEndpoint {
   public Uni<Response> deleteAllUsers() {
     // @formatter:off
     return Uni
-        .createFrom().item(getUserDao()::findAll)
-        .invoke(ignored -> getUserDao().deleteAll())
+        .createFrom().item(userDao()::findAll)
+        .invoke(ignored -> userDao().deleteAll())
         .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
@@ -97,7 +97,7 @@ public final class UsersEndpoint {
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name) {
     // @formatter:off
     return Uni
-        .createFrom().item(() -> getUserDao().findByName(name))
+        .createFrom().item(() -> userDao().findByName(name))
         .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
@@ -117,10 +117,10 @@ public final class UsersEndpoint {
       @IsJsonPatch final JsonNode patch) {
     // @formatter:off
     return Uni
-        .createFrom().item(() -> getUserDao().findByName(name))
+        .createFrom().item(() -> userDao().findByName(name))
         .map(Unchecked.function(user ->
-            Tuple2.of(user, getPatcher().patch(CreateUserRequest.from(user), patch))))
-        .map(tuple -> getUserDao().update(tuple.getItem1().name(), tuple.getItem2()))
+            Tuple2.of(user, patcher().patch(CreateUserRequest.of(user), patch))))
+        .map(tuple -> userDao().update(tuple.getItem1().name(), tuple.getItem2()))
         .map(maybeUser -> maybeUser
             .map(UsersEndpoint::toOkResponse)
             .orElseGet(() -> Response.noContent().build()));
@@ -137,8 +137,8 @@ public final class UsersEndpoint {
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name) {
     // @formatter:off
     return Uni
-        .createFrom().item(() -> getUserDao().findByName(name))
-        .invoke(user -> getUserDao().deleteByName(user.name()))
+        .createFrom().item(() -> userDao().findByName(name))
+        .invoke(user -> userDao().deleteByName(user.name()))
         .map(UsersEndpoint::toOkResponse);
     // @formatter:on
   }
@@ -147,7 +147,7 @@ public final class UsersEndpoint {
     // @formatter:off
     return Response
         .status(Response.Status.OK.getStatusCode())
-        .entity(users.stream().map(UserResponse::from).toList())
+        .entity(users.stream().map(UserResponse::of).toList())
         .build();
     // @formatter:on
   }
@@ -156,14 +156,17 @@ public final class UsersEndpoint {
     // @formatter:off
     return Response
             .status(Response.Status.OK.getStatusCode())
-            .entity(UserResponse.from(user))
+            .entity(UserResponse.of(user))
             .build();
     // @formatter:on
   }
 
   private static Response toCreatedResponse(final User user) {
-    return Response.created(UriBuilder.fromUri(PATH_URI).path(user.name()).build())
-        .entity(UserResponse.from(user)).build();
+    // @formatter:off
+    return Response
+        .created(UriBuilder.fromUri(PATH_URI).path(user.name()).build())
+        .entity(UserResponse.of(user))
+        .build();
+    // @formatter:on
   }
-
 }
