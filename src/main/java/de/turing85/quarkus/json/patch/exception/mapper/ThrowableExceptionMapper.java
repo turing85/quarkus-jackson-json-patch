@@ -17,7 +17,7 @@ public final class ThrowableExceptionMapper extends BaseExceptionMapper<NoSuchEl
   }
 
   @Override
-  protected int status() {
+  protected int statusFor(NoSuchElementException exception) {
     return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
   }
 

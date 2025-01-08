@@ -11,7 +11,7 @@ import org.jboss.logging.Logger;
 public abstract class BaseExceptionMapper<T extends Throwable> implements ExceptionMapper<T> {
   private final Logger logger;
 
-  protected abstract int status();
+  protected abstract int statusFor(T throwable);
 
   protected Logger.Level level() {
     return Logger.Level.INFO;
@@ -23,10 +23,11 @@ public abstract class BaseExceptionMapper<T extends Throwable> implements Except
 
   @Override
   public final Response toResponse(final T throwable) {
-    logger().logf(level(), throwable, "Caught exception, responding with status %s", status());
+    final int status = statusFor(throwable);
+    logger().logf(level(), throwable, "Caught exception, responding with status %s", status);
     // @formatter:off
     return Response
-        .status(status())
+        .status(status)
         .entity(Error.of(throwable.getMessage()))
         .build();
     // @formatter:on

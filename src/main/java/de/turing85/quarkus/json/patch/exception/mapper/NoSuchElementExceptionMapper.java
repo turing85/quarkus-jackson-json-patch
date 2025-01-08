@@ -20,7 +20,7 @@ public final class NoSuchElementExceptionMapper
   }
 
   @Override
-  protected int status() {
+  protected int statusFor(NoSuchElementException exception) {
     return Response.Status.NOT_FOUND.getStatusCode();
   }
 }

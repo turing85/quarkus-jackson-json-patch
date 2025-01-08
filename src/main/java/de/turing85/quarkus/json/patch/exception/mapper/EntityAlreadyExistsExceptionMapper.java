@@ -19,7 +19,7 @@ public final class EntityAlreadyExistsExceptionMapper
   }
 
   @Override
-  protected int status() {
+  protected int statusFor(EntityAlreadyExistsException exception) {
     return Response.Status.BAD_REQUEST.getStatusCode();
   }
 }

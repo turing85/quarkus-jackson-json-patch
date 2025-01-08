@@ -406,7 +406,7 @@ class UsersEndpointTest {
   }
 
   @Test
-  @DisplayName("Patch test fails → 400 BAD REQUEST ❌")
+  @DisplayName("Patch test fails → 409 CONFLICT ❌")
   void whenPatchTestFails_thenGetBadRequest() {
     // given
     // @formatter:off
@@ -432,7 +432,7 @@ class UsersEndpointTest {
 
     // then
         .then()
-            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .statusCode(Response.Status.CONFLICT.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));

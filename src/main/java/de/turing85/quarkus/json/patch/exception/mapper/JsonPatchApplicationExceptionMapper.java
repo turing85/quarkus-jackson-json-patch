@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
 
 import com.flipkart.zjsonpatch.JsonPatchApplicationException;
+import com.flipkart.zjsonpatch.Operation;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.UnwrapException;
 
@@ -19,7 +20,11 @@ public final class JsonPatchApplicationExceptionMapper
   }
 
   @Override
-  protected int status() {
+  protected int statusFor(JsonPatchApplicationException exception) {
+    if (exception.getOperation().equals(Operation.TEST)
+        && exception.getMessage().startsWith("Expected")) {
+      return Response.Status.CONFLICT.getStatusCode();
+    }
     return Response.Status.BAD_REQUEST.getStatusCode();
   }
 }
