@@ -2,14 +2,18 @@ package de.turing85.quarkus.json.patch.dao.impl.in.memory;
 
 import java.time.Instant;
 
-import de.turing85.quarkus.json.patch.spi.User;
+import jakarta.validation.constraints.Email;
 
-public record InMemoryUser(String name, String email, Instant createdAt) implements User {
+import de.turing85.quarkus.json.patch.spi.User;
+import org.jspecify.annotations.Nullable;
+
+public record InMemoryUser(String name, @Nullable @Email String email, Instant createdAt)
+    implements User {
   public static InMemoryUser of(final User user) {
     return new InMemoryUser(user.name(), user.email());
   }
 
-  private InMemoryUser(final String name, final String email) {
+  private InMemoryUser(final String name, @Nullable @Email final String email) {
     this(name, email, Instant.now());
   }
 

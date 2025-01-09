@@ -1,5 +1,7 @@
 package de.turing85.quarkus.json.patch.exception.mapper;
 
+import java.util.Optional;
+
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.core.Response;
@@ -22,7 +24,7 @@ public final class JsonPatchApplicationExceptionMapper
   @Override
   protected int statusFor(JsonPatchApplicationException exception) {
     if (exception.getOperation().equals(Operation.TEST)
-        && exception.getMessage().startsWith("Expected")) {
+        && Optional.ofNullable(exception.getMessage()).orElse("").startsWith("Expected")) {
       return Response.Status.CONFLICT.getStatusCode();
     }
     return Response.Status.BAD_REQUEST.getStatusCode();

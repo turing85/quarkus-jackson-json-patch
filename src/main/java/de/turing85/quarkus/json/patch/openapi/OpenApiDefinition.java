@@ -6,7 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
 import de.turing85.quarkus.json.patch.api.response.UserResponse;
-import de.turing85.quarkus.json.patch.exception.mapper.Error;
+import de.turing85.quarkus.json.patch.exception.mapper.ErrorResponse;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
@@ -76,7 +76,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 implementation = CreateUserRequest.class),
             @Schema(
                 name = OpenApiDefinition.SCHEMA_ERROR,
-                implementation = Error.class),
+                implementation = ErrorResponse.class),
         },
         requestBodies = {
           @RequestBody(

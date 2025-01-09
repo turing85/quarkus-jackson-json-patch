@@ -3,6 +3,7 @@ package de.turing85.quarkus.json.patch;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -18,6 +19,7 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,8 +34,11 @@ import static org.hamcrest.Matchers.emptyString;
 @TestHTTPEndpoint(UsersEndpoint.class)
 class UsersEndpointTest {
   private static final ObjectMapper MAPPER = new ObjectMapper();
-  private static final CreateUserRequest ALICE = CreateUserRequest.of("alice", "alice@gmail.com");
+  public static final String ALICE_NAME = "alice";
+  private static final CreateUserRequest ALICE =
+      CreateUserRequest.of(ALICE_NAME, "alice@gmail.com");
 
+  @Nullable
   @TestHTTPEndpoint(UsersEndpoint.class)
   @TestHTTPResource
   URI uri;
@@ -294,7 +299,7 @@ class UsersEndpointTest {
   @DisplayName("Patch Move → 200 OK ✅")
   void whenPatchMove_thenAllGood() {
     // given
-    final UserResponse updatedAlice = UserResponse.of(ALICE.email(), null);
+    final UserResponse updatedAlice = UserResponse.of(Objects.requireNonNull(ALICE.email()), null);
     // @formatter:off
     RestAssured
         .given()
@@ -331,7 +336,8 @@ class UsersEndpointTest {
   @DisplayName("Patch Copy → 200 OK ✅")
   void whenPatchCopy_thenAllGood() {
     // given
-    final CreateUserRequest updatedAlice = CreateUserRequest.of(ALICE.email(), ALICE.email());
+    final CreateUserRequest updatedAlice =
+        CreateUserRequest.of(Objects.requireNonNull(ALICE.email()), ALICE.email());
     // @formatter:off
     RestAssured
         .given()

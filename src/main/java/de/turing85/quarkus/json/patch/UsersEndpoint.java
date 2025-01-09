@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -65,8 +66,8 @@ public final class UsersEndpoint {
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_CREATED)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> createUser(
-      @RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) final CreateUserRequest request) {
+  public Uni<Response> createUser(@RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) @NotNull
+  @Valid final CreateUserRequest request) {
     // @formatter:off
     return Uni
         .createFrom().item(request)
@@ -93,8 +94,8 @@ public final class UsersEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> getUserByName(
-      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name) {
+  public Uni<Response> getUserByName(@Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME)
+  @PathParam("name") @NotNull final String name) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> userDao().findByName(name))
@@ -112,9 +113,10 @@ public final class UsersEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
   public Uni<Response> patchUserByName(
-      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name,
-      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) @Valid
-      @IsJsonPatch final JsonNode patch) {
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name")
+      @NotNull final String name,
+      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) @IsJsonPatch
+      @Valid final JsonNode patch) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> userDao().findByName(name))
@@ -133,8 +135,8 @@ public final class UsersEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> deleteUserByName(
-      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") final String name) {
+  public Uni<Response> deleteUserByName(@Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME)
+  @PathParam("name") @NotNull final String name) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> userDao().findByName(name))

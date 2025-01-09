@@ -31,7 +31,7 @@ public final class ConstraintViolationExceptionMapper
         .collect(Collectors.joining(System.lineSeparator()));
     return Response
         .status(Status.BAD_REQUEST)
-        .entity(Error.of(message))
+        .entity(ErrorResponse.of(message))
         .build();
     // @formatter:on
   }

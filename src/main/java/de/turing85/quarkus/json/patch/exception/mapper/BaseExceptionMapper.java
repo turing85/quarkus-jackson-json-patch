@@ -28,7 +28,7 @@ public abstract class BaseExceptionMapper<T extends Throwable> implements Except
     // @formatter:off
     return Response
         .status(status)
-        .entity(Error.of(throwable.getMessage()))
+        .entity(ErrorResponse.of(throwable.getMessage()))
         .build();
     // @formatter:on
   }
