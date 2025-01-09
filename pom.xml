@@ -64,6 +64,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <quarkus.bootstrap.incubating-model-resolver>true</quarkus.bootstrap.incubating-model-resolver>
         <quarkus.container-image.additional-tags>jvm</quarkus.container-image.additional-tags>
         <quarkus.docker.dockerfile-native-path>src/main/container/Containerfile.native-distroless</quarkus.docker.dockerfile-native-path>
         <quarkus.docker.dockerfile-jvm-path>src/main/container/Containerfile.temurin</quarkus.docker.dockerfile-jvm-path>
@@ -413,6 +414,10 @@
         <!-- Quarkus dependencies -->
         <dependency>
             <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-cyclonedx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-container-image-docker</artifactId>
         </dependency>
         <dependency>
@@ -587,6 +592,17 @@
         </profile>
 
         <!-- skip profiles -->
+        <profile>
+            <id>skip-cyclonedx</id>
+            <activation>
+                <property>
+                    <name>skip-cyclonedx</name>
+                </property>
+            </activation>
+            <properties>
+                <quarkus.cyclonedx.skip>true</quarkus.cyclonedx.skip>
+            </properties>
+        </profile>
         <profile>
             <id>skip-failsafe</id>
             <activation>
