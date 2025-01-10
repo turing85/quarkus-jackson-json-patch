@@ -4,7 +4,6 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("unused")
 public interface User {
   String name();
 
