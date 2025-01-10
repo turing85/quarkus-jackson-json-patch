@@ -11,7 +11,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = JsonPatchValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER, ElementType.FIELD})
-public @interface IsJsonPatch {
+public @interface JsonPatch {
   String message() default "";
 
   Class<?>[] groups() default {};

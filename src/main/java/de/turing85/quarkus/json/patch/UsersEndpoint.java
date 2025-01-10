@@ -25,7 +25,7 @@ import de.turing85.quarkus.json.patch.openapi.JsonPatchOpenApiFilter;
 import de.turing85.quarkus.json.patch.openapi.OpenApiDefinition;
 import de.turing85.quarkus.json.patch.spi.User;
 import de.turing85.quarkus.json.patch.spi.UserDao;
-import de.turing85.quarkus.json.patch.validation.IsJsonPatch;
+import de.turing85.quarkus.json.patch.validation.JsonPatch;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
 import io.smallrye.mutiny.unchecked.Unchecked;
@@ -66,8 +66,8 @@ public final class UsersEndpoint {
   @Parameter(ref = HttpHeaders.ACCEPT_ENCODING)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_CREATED)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> createUser(@RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) @NotNull
-  @Valid final CreateUserRequest request) {
+  public Uni<Response> createUser(@RequestBody(ref = OpenApiDefinition.REQUEST_USER_CREATE) @Valid
+  @NotNull final CreateUserRequest request) {
     // @formatter:off
     return Uni
         .createFrom().item(request)
@@ -115,8 +115,8 @@ public final class UsersEndpoint {
   public Uni<Response> patchUserByName(
       @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name")
       @NotNull final String name,
-      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) @IsJsonPatch
-      @Valid final JsonNode patch) {
+      @RequestBody(ref = JsonPatchOpenApiFilter.REQUEST_BODY_JSON_PATCH) @Valid
+      @JsonPatch final JsonNode patch) {
     // @formatter:off
     return Uni
         .createFrom().item(() -> userDao().findByName(name))
