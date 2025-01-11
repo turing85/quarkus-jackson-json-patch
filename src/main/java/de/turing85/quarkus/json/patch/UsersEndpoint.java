@@ -135,15 +135,16 @@ public final class UsersEndpoint {
   @APIResponse(ref = OpenApiDefinition.RESPONSE_USER_OK)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_NOT_FOUND)
   @APIResponse(ref = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR)
-  public Uni<Response> deleteUserByName(@Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME)
-  @PathParam("name") @NotNull final String name) {
-    // @formatter:off
+  // @formatter:off
+  public Uni<Response> deleteUserByName(
+      @Parameter(ref = OpenApiDefinition.PARAM_PATH_NAME) @PathParam("name") @NotNull
+      final String name) {
     return Uni
         .createFrom().item(() -> userDao().findByName(name))
         .invoke(user -> userDao().deleteByName(user.name()))
         .map(UsersEndpoint::toOkResponse);
-    // @formatter:on
   }
+  // @formatter:on
 
   private static Response toOkResponse(final List<User> users) {
     // @formatter:off

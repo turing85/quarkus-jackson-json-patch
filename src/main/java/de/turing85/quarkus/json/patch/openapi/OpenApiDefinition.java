@@ -63,27 +63,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 required = true,
                 schema = @Schema(type = SchemaType.STRING)),
         },
-        schemas = {
-            @Schema(
-                name = OpenApiDefinition.SCHEMA_USER,
-                implementation = UserResponse.class),
-            @Schema(
-                name = OpenApiDefinition.SCHEMA_USERS,
-                ref = OpenApiDefinition.SCHEMA_USER,
-                type = SchemaType.ARRAY),
-            @Schema(
-                name = OpenApiDefinition.SCHEMA_USER_CREATE,
-                implementation = CreateUserRequest.class),
-            @Schema(
-                name = OpenApiDefinition.SCHEMA_ERROR,
-                implementation = ErrorResponse.class),
-        },
         requestBodies = {
           @RequestBody(
               name = OpenApiDefinition.REQUEST_USER_CREATE,
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON,
-                  schema = @Schema(ref = OpenApiDefinition.SCHEMA_USER_CREATE),
+                  schema = @Schema(ref = CreateUserRequest.SCHEMA_NAME),
                   example = """
                       {
                         "name": "alice",
@@ -102,7 +87,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_USER),
+                    schema = @Schema(ref = UserResponse.SCHEMA_NAME),
                     example = """
                         {
                           "name": "alice",
@@ -120,7 +105,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_USER),
+                    schema = @Schema(ref = UserResponse.SCHEMA_NAME),
                     example = """
                         {
                           "name": "alice",
@@ -137,7 +122,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_USERS),
+                    schema = @Schema(ref = UserResponse.SCHEMA_NAME_LIST),
                     example = """
                         [
                           {
@@ -160,7 +145,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_ERROR),
+                    schema = @Schema(ref = ErrorResponse.SCHEMA_NAME),
                     example = """
                         {
                           "message": "Bad request"
@@ -176,7 +161,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_ERROR),
+                    schema = @Schema(ref = ErrorResponse.SCHEMA_NAME),
                     example = """
                         {
                           "message": "Entity not found"
@@ -192,7 +177,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_ERROR),
+                    schema = @Schema(ref = ErrorResponse.SCHEMA_NAME),
                     example = """
                         {
                           "message": "Internal Server Error"
@@ -208,8 +193,4 @@ public final class OpenApiDefinition extends Application {
   public static final String RESPONSE_USER_CREATED = "UserCreated";
   public static final String RESPONSE_USER_OK = "UserOk";
   public static final String RESPONSE_USERS_OK = "UsersOk";
-  public static final String SCHEMA_ERROR = "Error";
-  public static final String SCHEMA_USER = "User";
-  public static final String SCHEMA_USERS = "User List";
-  public static final String SCHEMA_USER_CREATE = "Create User";
 }
