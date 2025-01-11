@@ -412,8 +412,37 @@ class UsersEndpointTest {
   }
 
   @Test
+  @DisplayName("Patch test createdAt field → 400 BAD REQUEST ❌")
+  void whenPatchTestCreatedAt_thenGetBadRequest() {
+    // given
+    // @formatter:off
+    RestAssured
+        .given()
+            .contentType(MediaType.APPLICATION_JSON_PATCH_JSON)
+            .body("""
+                    [
+                      {
+                        "op": "test",
+                        "path": "/createdAt",
+                        "value": "anything"
+                      }
+                    ]""")
+
+        // when
+        .when().patch(ALICE.name())
+
+        // then
+        .then()
+            .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
+            .body(is(not(emptyString())));
+    // @formatter:on
+  }
+
+  @Test
   @DisplayName("Patch test fails → 409 CONFLICT ❌")
-  void whenPatchTestFails_thenGetBadRequest() {
+  void whenPatchTestFails_thenGetConflict() {
     // given
     // @formatter:off
     RestAssured
