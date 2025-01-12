@@ -11,7 +11,11 @@ import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.jspecify.annotations.Nullable;
 
-@Schema(name = UserResponse.SCHEMA_NAME)
+@Schema(name = UserResponse.SCHEMA_NAME, examples = { """
+    {
+      "name": "alice",
+      "email": "alice@email.com"
+    }""" })
 @RegisterForReflection
 public record UserResponse(@NotNull String name, @Nullable @Email String email) implements User {
   public static final String SCHEMA_NAME = "User";
@@ -27,7 +31,13 @@ public record UserResponse(@NotNull String name, @Nullable @Email String email) 
 }
 
 @Schema(name = UserResponse.SCHEMA_NAME_LIST, ref = UserResponse.SCHEMA_NAME,
-    type = SchemaType.ARRAY)
+    type = SchemaType.ARRAY, examples = { """
+    [
+      {
+        "name": "alice",
+        "email": "alice@email.com"
+      }
+    ]""" })
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("unused")
 class UserList {}
