@@ -68,12 +68,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
               name = OpenApiDefinition.REQUEST_USER_CREATE,
               content = @Content(
                   mediaType = MediaType.APPLICATION_JSON,
-                  schema = @Schema(ref = CreateUserRequest.SCHEMA_NAME),
-                  example = """
-                      {
-                        "name": "alice",
-                        "email": "alice@gmail.com"
-                      }""")),
+                  schema = @Schema(ref = CreateUserRequest.SCHEMA_NAME))),
         },
         responses = {
             @APIResponse(
@@ -87,12 +82,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = UserResponse.SCHEMA_NAME),
-                    example = """
-                        {
-                          "name": "alice",
-                          "email": "alice@email.com"
-                        }""")),
+                    schema = @Schema(ref = UserResponse.SCHEMA_NAME))),
             @APIResponse(
                 name = OpenApiDefinition.RESPONSE_USER_CREATED,
                 responseCode = "204",
@@ -105,12 +95,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = UserResponse.SCHEMA_NAME),
-                    example = """
-                        {
-                          "name": "alice",
-                          "email": "alice@email.com"
-                        }""")),
+                    schema = @Schema(ref = UserResponse.SCHEMA_NAME))),
             @APIResponse(
                 name = OpenApiDefinition.RESPONSE_USERS_OK,
                 description = "The users",
@@ -122,14 +107,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 },
                 content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = UserResponse.SCHEMA_NAME_LIST),
-                    example = """
-                        [
-                          {
-                            "name": "alice",
-                            "email": "alice@email.com"
-                          }
-                        ]""")),
+                    schema = @Schema(ref = UserResponse.SCHEMA_NAME_LIST))),
             @APIResponse(
                 name = OpenApiDefinition.RESPONSE_NO_CONTENT,
                 description = "No content",
