@@ -7,7 +7,11 @@ import de.turing85.quarkus.json.patch.spi.User;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.jspecify.annotations.Nullable;
 
-@Schema(name = CreateUserRequest.SCHEMA_NAME)
+@Schema(name = CreateUserRequest.SCHEMA_NAME, examples = { """
+    {
+      "name": "alice",
+      "email": "alice@email.com"
+    }""" })
 public record CreateUserRequest(@NotNull String name, @Nullable @Email String email)
     implements User {
   public static final String SCHEMA_NAME = "Create User";
