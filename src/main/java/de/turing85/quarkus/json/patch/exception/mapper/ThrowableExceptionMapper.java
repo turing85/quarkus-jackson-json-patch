@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 
 import org.jboss.logging.Logger;
@@ -12,8 +13,8 @@ import org.jboss.logging.Logger;
 @Provider
 @Priority(Priorities.USER + 100)
 public final class ThrowableExceptionMapper extends BaseExceptionMapper<NoSuchElementException> {
-  ThrowableExceptionMapper(final Logger logger) {
-    super(logger);
+  ThrowableExceptionMapper(final UriInfo uriInfo, final Logger logger) {
+    super(uriInfo, logger);
   }
 
   @Override
