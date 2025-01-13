@@ -36,6 +36,9 @@
         <!-- Quarkiverse versions -->
         <quarkus-resteasy-problem.version>3.15.0</quarkus-resteasy-problem.version>
 
+        <!-- Quarkiverse versions -->
+        <quarkus-resteasy-problem.version>3.15.0</quarkus-resteasy-problem.version>
+
         <!-- Project setup -->
         <attach-elf.skip>true</attach-elf.skip>
         <attach-fast-jar.skip>false</attach-fast-jar.skip>
