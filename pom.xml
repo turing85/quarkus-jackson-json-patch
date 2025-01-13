@@ -33,6 +33,9 @@
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.18.3</quarkus.platform.version>
 
+        <!-- Quarkiverse versions -->
+        <quarkus-resteasy-problem.version>3.15.0</quarkus-resteasy-problem.version>
+
         <!-- Project setup -->
         <attach-elf.skip>true</attach-elf.skip>
         <attach-fast-jar.skip>false</attach-fast-jar.skip>
@@ -427,6 +430,13 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-validator</artifactId>
+        </dependency>
+
+        <!-- Quarkiverse dependencies -->
+        <dependency>
+            <groupId>io.quarkiverse.resteasy-problem</groupId>
+            <artifactId>quarkus-resteasy-problem</artifactId>
+            <version>${quarkus-resteasy-problem.version}</version>
         </dependency>
 
         <!-- Test dependencies -->

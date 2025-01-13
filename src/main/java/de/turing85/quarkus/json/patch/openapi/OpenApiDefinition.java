@@ -6,7 +6,6 @@ import jakarta.ws.rs.core.MediaType;
 
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
 import de.turing85.quarkus.json.patch.api.response.UserResponse;
-import de.turing85.quarkus.json.patch.exception.mapper.ErrorResponse;
 import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
@@ -62,6 +61,11 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                 in = ParameterIn.PATH,
                 required = true,
                 schema = @Schema(type = SchemaType.STRING)),
+        },
+        schemas = {
+            @Schema(
+                name = OpenApiDefinition.SCHEMA_PROBLEM,
+                ref = "https://json.schemastore.org/problem-object-rfc9457.json"),
         },
         requestBodies = {
           @RequestBody(
@@ -122,12 +126,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                     @Header(ref = HttpHeaders.CONTENT_LENGTH),
                 },
                 content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = ErrorResponse.SCHEMA_NAME),
-                    example = """
-                        {
-                          "message": "Bad request"
-                        }""")),
+                    mediaType = "application/problem+json",
+                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_PROBLEM))),
             @APIResponse(
                 name = OpenApiDefinition.RESPONSE_NOT_FOUND,
                 description = "Entity not found",
@@ -138,12 +138,8 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                     @Header(ref = HttpHeaders.CONTENT_LENGTH),
                 },
                 content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = ErrorResponse.SCHEMA_NAME),
-                    example = """
-                        {
-                          "message": "Entity not found"
-                        }""")),
+                    mediaType = "application/problem+json",
+                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_PROBLEM))),
             @APIResponse(
                 name = OpenApiDefinition.RESPONSE_INTERNAL_SERVER_ERROR,
                 description = "An internal server error occurred",
@@ -154,14 +150,12 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
                     @Header(ref = HttpHeaders.CONTENT_LENGTH),
                 },
                 content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(ref = ErrorResponse.SCHEMA_NAME),
-                    example = """
-                        {
-                          "message": "Internal Server Error"
-                        }"""))}))
+                    mediaType = "application/problem+json",
+                    schema = @Schema(ref = OpenApiDefinition.SCHEMA_PROBLEM))),
+        }))
 // @formatter:on
 public final class OpenApiDefinition extends Application {
+  public static final String SCHEMA_PROBLEM = "Problem";
   public static final String PARAM_PATH_NAME = "name";
   public static final String REQUEST_USER_CREATE = "Create User";
   public static final String RESPONSE_NO_CONTENT = "NoContent";

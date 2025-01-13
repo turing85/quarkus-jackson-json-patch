@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.turing85.quarkus.json.patch.api.request.CreateUserRequest;
 import de.turing85.quarkus.json.patch.api.response.UserResponse;
 import de.turing85.quarkus.json.patch.spi.User;
+import io.quarkiverse.resteasy.problem.HttpProblem;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -97,7 +98,7 @@ class UsersEndpointTest {
   }
 
   @Test
-  @DisplayName("Delete existing → 400 BAD REQUEST ✅")
+  @DisplayName("Delete existing → 400 BAD REQUEST ❌")
   void whenCreateExisting_thenBadRequest() {
     // given
     // @formatter:off
@@ -111,7 +112,7 @@ class UsersEndpointTest {
     // then
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     RestAssured
@@ -142,7 +143,7 @@ class UsersEndpointTest {
         .when().get(ALICE.name())
         .then()
             .statusCode(Response.Status.NOT_FOUND.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     // @formatter:on
@@ -156,7 +157,7 @@ class UsersEndpointTest {
         .when().delete("does-not-exist")
         .then()
             .statusCode(Response.Status.NOT_FOUND.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     // @formatter:on
@@ -398,7 +399,7 @@ class UsersEndpointTest {
     // then
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     RestAssured
@@ -434,7 +435,7 @@ class UsersEndpointTest {
         // then
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     // @formatter:on
@@ -468,7 +469,7 @@ class UsersEndpointTest {
     // then
         .then()
             .statusCode(Response.Status.CONFLICT.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     RestAssured
@@ -499,7 +500,7 @@ class UsersEndpointTest {
 
         .then()
             .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(HttpProblem.MEDIA_TYPE.toString())
             .header(HttpHeaders.CONTENT_LENGTH, is(notNullValue()))
             .body(is(not(emptyString())));
     // @formatter:on
