@@ -26,7 +26,7 @@
         <!-- Dependency versions -->
         <jspecify.version>1.0.0</jspecify.version>
         <lombok.version>1.18.42</lombok.version>
-        <zjsonpatch.version>0.4.16</zjsonpatch.version>
+        <zjsonpatch.version>0.6.2</zjsonpatch.version>
 
         <!-- Quarkus versions -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -405,7 +405,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.flipkart.zjsonpatch</groupId>
+            <groupId>io.github.vishwakarma</groupId>
             <artifactId>zjsonpatch</artifactId>
             <version>${zjsonpatch.version}</version>
         </dependency>
