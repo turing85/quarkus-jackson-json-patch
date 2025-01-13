@@ -6,21 +6,21 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
 
-import de.turing85.quarkus.json.patch.spi.exception.EntityAlreadyExistsException;
+import com.flipkart.zjsonpatch.JsonPatchTestFailedException;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.UnwrapException;
 
 @Provider
 @Priority(Priorities.USER)
 @UnwrapException(RuntimeException.class)
-public final class EntityAlreadyExistsExceptionMapper
-    extends BaseExceptionMapper<EntityAlreadyExistsException> {
-  EntityAlreadyExistsExceptionMapper(final UriInfo uriInfo, final Logger logger) {
+public final class JsonPatchTestFailedExceptionMapper
+    extends BaseExceptionMapper<JsonPatchTestFailedException> {
+  JsonPatchTestFailedExceptionMapper(UriInfo uriInfo, final Logger logger) {
     super(uriInfo, logger);
   }
 
   @Override
   protected int status() {
-    return Response.Status.BAD_REQUEST.getStatusCode();
+    return Response.Status.CONFLICT.getStatusCode();
   }
 }

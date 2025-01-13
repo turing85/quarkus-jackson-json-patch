@@ -19,7 +19,7 @@ public abstract class BaseExceptionMapper<T extends Throwable> implements Except
   private final UriInfo uriInfo;
   private final Logger logger;
 
-  protected abstract int statusFor(T throwable);
+  protected abstract int status();
 
   protected Logger.Level level() {
     return Logger.Level.INFO;
@@ -31,12 +31,11 @@ public abstract class BaseExceptionMapper<T extends Throwable> implements Except
 
   @Override
   public final Response toResponse(final T throwable) {
-    final int status = statusFor(throwable);
-    logger().logf(level(), throwable, "Caught exception, responding with status %s", status);
+    logger().logf(level(), throwable, "Caught exception, responding with status %s", status());
     // @formatter:off
     final HttpProblem problem = HttpProblem.builder()
-            .withStatus(status)
-            .withTitle(Optional.ofNullable(Response.Status.fromStatusCode(status))
+            .withStatus(status())
+            .withTitle(Optional.ofNullable(Response.Status.fromStatusCode(status()))
                 .map(Response.Status::getReasonPhrase)
                 .orElse("<unknown>"))
             .withDetail(throwable.getMessage())
