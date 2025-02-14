@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Email;
 import de.turing85.quarkus.json.patch.spi.User;
 import org.jspecify.annotations.Nullable;
 
+// @formatter:off
 public record InMemoryUser(String name, @Nullable @Email String email, Instant createdAt)
     implements User {
   public static InMemoryUser of(final User user) {
@@ -21,3 +22,4 @@ public record InMemoryUser(String name, @Nullable @Email String email, Instant c
     return new InMemoryUser(user.name(), user.email(), createdAt());
   }
 }
+// @formatter:on

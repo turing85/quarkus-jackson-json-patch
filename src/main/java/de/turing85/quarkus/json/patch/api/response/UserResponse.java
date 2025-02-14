@@ -7,6 +7,7 @@ import de.turing85.quarkus.json.patch.spi.User;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.jspecify.annotations.Nullable;
 
+// @formatter:off
 @RegisterForReflection
 public record UserResponse(@NotNull String name, @Nullable @Email String email) implements User {
   public static UserResponse of(final User user) {
@@ -17,3 +18,4 @@ public record UserResponse(@NotNull String name, @Nullable @Email String email) 
     return new UserResponse(name, email);
   }
 }
+// @formatter:on

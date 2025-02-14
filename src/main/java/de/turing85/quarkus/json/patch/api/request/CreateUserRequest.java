@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import de.turing85.quarkus.json.patch.spi.User;
 import org.jspecify.annotations.Nullable;
 
+// @formatter:off
 public record CreateUserRequest(@NotNull String name, @Nullable @Email String email)
     implements User {
   public static CreateUserRequest of(final User user) {
@@ -16,3 +17,4 @@ public record CreateUserRequest(@NotNull String name, @Nullable @Email String em
     return new CreateUserRequest(name, email);
   }
 }
+// @formatter:on
