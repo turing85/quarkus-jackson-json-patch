@@ -13,7 +13,7 @@ import io.smallrye.openapi.internal.models.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.OASFilter;
 import org.eclipse.microprofile.openapi.models.OpenAPI;
 
-@OpenApiFilter(OpenApiFilter.RunStage.BUILD)
+@OpenApiFilter(stages = OpenApiFilter.RunStage.BUILD)
 public final class JsonPatchOpenApiFilter implements OASFilter {
   public static final String REQUEST_BODY_JSON_PATCH = "JsonPatch";
   public static final String SCHEMA_JSON_PATCH = "Json Patch";
