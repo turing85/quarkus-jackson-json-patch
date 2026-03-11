@@ -25,7 +25,7 @@
 
         <!-- Dependency versions -->
         <jspecify.version>1.0.0</jspecify.version>
-        <lombok.version>1.18.42</lombok.version>
+        <lombok.version>1.18.44</lombok.version>
         <zjsonpatch.version>0.6.2</zjsonpatch.version>
 
         <!-- Quarkus versions -->
